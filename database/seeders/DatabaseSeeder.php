@@ -15,11 +15,44 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'role' => 'admin',
+            'password' => 'password',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $teacher = User::factory()->create([
+            'name' => 'Teacher Tina',
+            'email' => 'teacher@example.com',
+            'role' => 'teacher',
+            'password' => 'password',
+        ]);
+
+        $student = User::factory()->create([
+            'name' => 'Student Sam',
+            'email' => 'student@example.com',
+            'role' => 'student',
+            'student_number' => 'S-0001',
+            'password' => 'password',
+        ]);
+
+        // Create a demo course and enrollment
+        $course = \App\Models\Course::create([
+            'code' => 'CS101',
+            'title' => 'Intro to Programming',
+            'teacher_id' => $teacher->id,
+        ]);
+
+        $enrollment = \App\Models\Enrollment::create([
+            'user_id' => $student->id,
+            'course_id' => $course->id,
+        ]);
+
+        \App\Models\Grade::create([
+            'enrollment_id' => $enrollment->id,
+            'item' => 'Final',
+            'score' => 95,
         ]);
     }
 }
