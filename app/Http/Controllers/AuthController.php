@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -28,7 +25,19 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('home'));
+
+            // Only allow teachers or admins
+            if (Auth::user()->isTeacher() || Auth::user()->isAdmin()) {
+                return redirect()->intended(route('home'));
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'email' => 'Only teachers and admins can log in here.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors([
@@ -44,28 +53,7 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function handleGoogleCallback()
-    {
-        $googleUser = Socialite::driver('google')->stateless()->user();
-
-        $user = User::firstOrCreate(
-            ['email' => $googleUser->getEmail()],
-            [
-                'name' => $googleUser->getName() ?: ($googleUser->getNickname() ?: 'User'),
-                'password' => Hash::make(Str::random(32)),
-                'role' => 'student',
-            ],
-        );
-
-        Auth::login($user, true);
-        request()->session()->regenerate();
-        return redirect()->intended(route('home'));
-    }
+    // Google OAuth removed
 }
 
 
