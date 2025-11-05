@@ -11,8 +11,19 @@
     <nav class="flex items-center gap-4 px-4 py-3 border-b bg-white">
         <a href="/" class="font-semibold">Home</a>
         @auth
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('register') }}">Register</a>
+                <a href="{{ route('admin.users.index') }}">Users</a>
+                <a href="{{ route('admin.programs.index') }}">Programs</a>
+                <a href="{{ route('admin.courses.index') }}">Courses</a>
+                <a href="{{ route('admin.academic-years.index') }}">Academic Years</a>
+                <a href="{{ route('admin.semesters.index') }}">Semesters</a>
+                <a href="{{ route('admin.schedules.index') }}">Schedules</a>
+                <a href="{{ route('admin.enrollments.index') }}">Enrollments</a>
+                <a href="{{ route('admin.grades.index') }}">Grades</a>
+            @endif
             @if(auth()->user()->isTeacher() || auth()->user()->isAdmin())
-                <a href="{{ route('teacher.courses.index') }}">My Courses</a>
+                <!-- <a href="{ route('teacher.courses.index') }">My Courses</a> -->
             @endif
             @if(auth()->user()->isStudent())
                 <a href="{{ route('student.portal.index') }}">My Grades</a>

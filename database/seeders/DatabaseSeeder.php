@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\AcademicYear;
+use App\Models\Semester;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -37,11 +39,39 @@ class DatabaseSeeder extends Seeder
             'password' => 'password',
         ]);
 
+        // Create academic years
+        $academicYear2024 = AcademicYear::create([
+            'year' => '2024-2025',
+            'is_active' => true,
+        ]);
+
+        $academicYear2023 = AcademicYear::create([
+            'year' => '2023-2024',
+            'is_active' => false,
+        ]);
+
+        // Create semesters
+        $firstSemester = Semester::create([
+            'name' => 'First Semester',
+            'code' => '1ST',
+        ]);
+
+        $secondSemester = Semester::create([
+            'name' => 'Second Semester',
+            'code' => '2ND',
+        ]);
+
+        $summerSemester = Semester::create([
+            'name' => 'Summer',
+            'code' => 'SUMMER',
+        ]);
+
         // Create a demo course and enrollment
         $course = \App\Models\Course::create([
             'code' => 'CS101',
             'title' => 'Intro to Programming',
-            'teacher_id' => $teacher->id,
+            'lec_unit' => 3,
+            'lab_unit' => 1,
         ]);
 
         $enrollment = \App\Models\Enrollment::create([

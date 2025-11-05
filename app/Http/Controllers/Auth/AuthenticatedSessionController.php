@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\StudentLoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,26 @@ class AuthenticatedSessionController extends Controller
         return back()->withErrors([
             'email' => 'Only teachers and admins can log in here.',
         ])->onlyInput('email');
+    }
+
+    /**
+     * Display the student login view.
+     */
+    public function createStudent(): View
+    {
+        return view('auth.student-login');
+    }
+
+    /**
+     * Handle an incoming student authentication request.
+     */
+    public function storeStudent(StudentLoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
+
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('student.portal.index', absolute: false));
     }
 
     /**

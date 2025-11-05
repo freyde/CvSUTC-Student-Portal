@@ -14,6 +14,7 @@ class Enrollment extends Model
     protected $fillable = [
         'user_id',
         'course_id',
+        'schedule_id',
     ];
 
     public function user(): BelongsTo
@@ -24,6 +25,11 @@ class Enrollment extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function schedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class);
     }
 
     public function grades(): HasMany

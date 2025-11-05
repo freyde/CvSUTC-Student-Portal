@@ -19,6 +19,11 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+        
+        // Clear any intended redirect URL to prevent redirects
+        session()->forget('url.intended');
+        
         return view('auth.register');
     }
 
@@ -29,22 +34,34 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+            'role' => ['required', 'string', 'in:student,teacher,admin'],
+        ];
+
+        // Email is required for teachers/admins, optional for students
+        if ($request->role !== 'student') {
+            $rules['email'] = ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class];
+        } else {
+            $rules['email'] = ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class];
+            $rules['student_number'] = ['required', 'string', 'max:255', 'unique:users,student_number'];
+        }
+
+        $validated = $request->validate($rules);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'student_number' => $validated['student_number'] ?? null,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('register')->with('status', 'User registered successfully.');
     }
 }

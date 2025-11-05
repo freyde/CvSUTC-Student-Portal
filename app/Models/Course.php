@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
@@ -14,12 +14,13 @@ class Course extends Model
     protected $fillable = [
         'code',
         'title',
-        'teacher_id',
+        'lec_unit',
+        'lab_unit',
     ];
 
-    public function teacher(): BelongsTo
+    public function programs(): BelongsToMany
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsToMany(Program::class, 'program_course');
     }
 
     public function enrollments(): HasMany
