@@ -15,7 +15,7 @@ class GradeController extends Controller
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
         
-        $query = Enrollment::with('user', 'course', 'schedule', 'grades');
+        $query = Enrollment::with('user', 'course', 'schedule.course', 'grades');
 
         // Search by student number only
         if ($request->filled('search')) {

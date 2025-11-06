@@ -6,6 +6,26 @@
         <h1 class="text-2xl font-semibold">Manage Grades</h1>
     </div>
 
+    <!-- Valid Grades Reference -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-2">Valid Grade Values:</h2>
+        <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.00</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.25</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.50</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.75</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.00</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.25</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.50</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.75</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">3.00</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">4.00</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">Drp.</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">Inc.</span>
+            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">5.00</span>
+        </div>
+    </div>
+
     <!-- Search Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('admin.grades.index') }}" class="flex gap-4">
@@ -31,7 +51,6 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Schedule Code</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grades</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -39,7 +58,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $enrollment->user->student_number ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->user->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->course->code }} - {{ $enrollment->course->title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->schedule->course->code ?? $enrollment->course->code }} - {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->schedule ? $enrollment->schedule->schedule_code : 'N/A' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             <div class="space-y-2">
@@ -47,11 +66,6 @@
                                     <div class="flex items-center gap-2">
                                         <span class="font-medium">{{ $grade->item }}:</span>
                                         <span>{{ $grade->score ?? 'N/A' }}</span>
-                                        <form action="{{ route('admin.grades.delete-grade', $grade) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 text-xs" onclick="return confirm('Delete this grade?')">×</button>
-                                        </form>
                                     </div>
                                 @endforeach
                                 @if($enrollment->grades->isEmpty())
@@ -59,18 +73,10 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <form action="{{ route('admin.grades.update-grade', $enrollment) }}" method="POST" class="flex gap-2">
-                                @csrf
-                                <input type="text" name="item" placeholder="Grade Item" value="Final" required class="text-xs px-2 py-1 rounded border border-gray-300 w-20">
-                                <input type="number" step="0.01" min="0" max="100" name="score" placeholder="Score" class="text-xs px-2 py-1 rounded border border-gray-300 w-20">
-                                <button type="submit" class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
-                            </form>
-                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No enrollments found.</td>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No enrollments found.</td>
                     </tr>
                 @endforelse
             </tbody>
