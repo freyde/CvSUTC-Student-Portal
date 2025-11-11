@@ -14,7 +14,6 @@
             <x-input-label for="student_number" :value="__('Student Number')" />
             <x-text-input id="student_number" class="block mt-1 w-full" type="text" name="student_number" :value="old('student_number')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('student_number')" class="mt-2" />
-            <p class="mt-1 text-sm text-gray-600">For Students only. Teachers/Admins: <a href="{{ route('login') }}" class="text-blue-600 underline">Login here</a></p>
         </div>
 
         <!-- Password -->
