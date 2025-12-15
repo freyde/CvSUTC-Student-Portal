@@ -69,6 +69,21 @@
             <p class="mt-1 text-sm text-gray-600">Required for students</p>
         </div>
 
+        <!-- Program (shown only for student role) -->
+        <div id="program_field" style="display: none;">
+            <x-input-label for="program_id" :value="__('Program')" />
+            <select id="program_id" name="program_id" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Select Program (Optional)</option>
+                @foreach($programs as $program)
+                    <option value="{{ $program->id }}" {{ old('program_id') == $program->id ? 'selected' : '' }}>
+                        {{ $program->name }} ({{ $program->code }})
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('program_id')" class="mt-2" />
+            <p class="mt-1 text-sm text-gray-600">Optional for students</p>
+        </div>
+
         <div class="flex items-center justify-end mt-4">
             <x-primary-button>
                 {{ __('Register') }}
@@ -120,17 +135,20 @@ Ana Student,,student,2023-00001,BSCS</pre>
     document.getElementById('role').addEventListener('change', function() {
         const studentNumberField = document.getElementById('student_number_field');
         const studentNumberInput = document.getElementById('student_number');
+        const programField = document.getElementById('program_field');
         const emailInput = document.getElementById('email');
         const emailHelp = document.getElementById('email_help');
         
         if (this.value === 'student') {
             studentNumberField.style.display = 'block';
             studentNumberInput.setAttribute('required', 'required');
+            programField.style.display = 'block';
             emailInput.removeAttribute('required');
             emailHelp.textContent = 'Optional for students (not used for login)';
         } else {
             studentNumberField.style.display = 'none';
             studentNumberInput.removeAttribute('required');
+            programField.style.display = 'none';
             emailInput.setAttribute('required', 'required');
             emailHelp.textContent = 'Required for teachers and admins';
         }
@@ -140,6 +158,7 @@ Ana Student,,student,2023-00001,BSCS</pre>
     if (document.getElementById('role').value === 'student') {
         document.getElementById('student_number_field').style.display = 'block';
         document.getElementById('student_number').setAttribute('required', 'required');
+        document.getElementById('program_field').style.display = 'block';
         document.getElementById('email').removeAttribute('required');
         document.getElementById('email_help').textContent = 'Optional for students (not used for login)';
     } else {

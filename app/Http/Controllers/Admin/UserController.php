@@ -18,13 +18,27 @@ class UserController extends Controller
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
         $role = $request->query('role', 'all');
+        $search = $request->query('search');
+        
         $query = User::with('program')->orderBy('name');
+        
+        // Role filter
         if (in_array($role, ['student', 'teacher', 'admin'])) {
             $query->where('role', $role);
         }
+        
+        // Search filter
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('student_number', 'like', "%{$search}%");
+            });
+        }
+        
         $users = $query->paginate(20)->withQueryString();
 
-        return view('admin.users.index', compact('users', 'role'));
+        return view('admin.users.index', compact('users', 'role', 'search'));
     }
 
     public function importFromCsv(Request $request)

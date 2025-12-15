@@ -24,7 +24,9 @@ class RegisteredUserController extends Controller
         // Clear any intended redirect URL to prevent redirects
         session()->forget('url.intended');
         
-        return view('auth.register');
+        $programs = \App\Models\Program::orderBy('name')->get();
+        
+        return view('auth.register', compact('programs'));
     }
 
     /**
@@ -48,6 +50,7 @@ class RegisteredUserController extends Controller
         } else {
             $rules['email'] = ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class];
             $rules['student_number'] = ['required', 'string', 'max:255', 'unique:users,student_number'];
+            $rules['program_id'] = ['nullable', 'exists:programs,id'];
         }
 
         $validated = $request->validate($rules);
@@ -58,6 +61,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'student_number' => $validated['student_number'] ?? null,
+            'program_id' => $validated['program_id'] ?? null,
         ]);
 
         event(new Registered($user));

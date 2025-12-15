@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Student\PortalController;
+use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\AcademicYearController;
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
     // Student portal routes
     Route::prefix('student-portal')->name('student.')->group(function () {
         Route::get('/', [PortalController::class, 'index'])->name('portal.index');
+        Route::get('/profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.update-password');
     });
 
     // Admin routes (admin checks are in controllers)
