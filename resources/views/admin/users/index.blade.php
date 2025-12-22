@@ -176,7 +176,7 @@ Ana Student,,student,2023-00001,BSCS</pre>
                 </div>
                 @if(session('generated_password') && session('generated_password.user_id') === $user->id)
                     <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
-                        <div class="font-semibold mb-1">New Temporary Password</div>
+                        <div class="font-semibold mb-1">New Password</div>
                         <div class="text-sm">
                             Password: <span class="font-mono px-2 py-1 bg-white border border-yellow-200 rounded">{{ session('generated_password.value') }}</span>
                         </div>
