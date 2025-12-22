@@ -5,6 +5,12 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Manage Schedules</h1>
         <div class="flex gap-2">
+            <form method="POST" action="{{ route('admin.schedules.generate-all-pins') }}" class="inline" onsubmit="return confirm('Generate PINs for all schedules that don\'t have one? This will create unique 6-digit PINs.');">
+                @csrf
+                <button type="submit" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">
+                    Generate PINs for All Schedules
+                </button>
+            </form>
             <button onclick="document.getElementById('csv-upload-modal').classList.remove('hidden')" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
                 Import CSV
             </button>

@@ -12,7 +12,12 @@ class CourseController extends Controller
     public function index()
     {
         $this->authorizeTeacher();
-        $courses = Course::where('teacher_id', Auth::id())->latest()->get();
+        // Get courses through schedules where the teacher is the instructor
+        $courses = Course::whereHas('schedules', function($query) {
+            $query->where('instructor_id', Auth::id());
+        })->with(['schedules' => function($query) {
+            $query->where('instructor_id', Auth::id());
+        }])->latest()->get();
         return view('teacher.courses.index', compact('courses'));
     }
 
@@ -28,8 +33,9 @@ class CourseController extends Controller
         $data = $request->validate([
             'code' => ['required', 'string', 'max:50', 'unique:courses,code'],
             'title' => ['required', 'string', 'max:255'],
+            'lec_unit' => ['nullable', 'integer', 'min:0'],
+            'lab_unit' => ['nullable', 'integer', 'min:0'],
         ]);
-        $data['teacher_id'] = Auth::id();
         Course::create($data);
         return redirect()->route('teacher.courses.index')->with('status', 'Course created.');
     }

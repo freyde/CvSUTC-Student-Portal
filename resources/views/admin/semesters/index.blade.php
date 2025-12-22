@@ -10,7 +10,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
@@ -22,8 +22,8 @@
                 @forelse($semesters as $semester)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $semester->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $semester->code }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">{{ $semester->code }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium">
                             <button onclick="openEditModal({{ $semester->id }}, '{{ $semester->name }}', '{{ $semester->code }}')" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
                             <form action="{{ route('admin.semesters.destroy', $semester) }}" method="POST" class="inline">
                                 @csrf

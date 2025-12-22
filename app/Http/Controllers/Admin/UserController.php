@@ -135,14 +135,37 @@ class UserController extends Controller
         return back()->with('status', $message);
     }
 
-    public function generatePassword(User $user)
+    public function generatePassword(Request $request, User $user)
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
         $newPassword = Str::random(12);
         $user->update(['password' => Hash::make($newPassword)]);
 
-        return back()->with('status', "Generated password for {$user->name}: {$newPassword}");
+        return back()->with('generated_password', [
+            'user_id' => $user->id,
+            'user' => $user->name,
+            'value' => $newPassword,
+        ])->with('status', "Generated a new temporary password for {$user->name}.");
+    }
+
+    public function viewPassword(Request $request, User $user)
+    {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        $request->validate([
+            'admin_password' => ['required', 'current_password'],
+        ]);
+
+        // Passwords are hashed; generate a fresh temporary password to display
+        $newPassword = Str::random(12);
+        $user->update(['password' => Hash::make($newPassword)]);
+
+        return back()->with('generated_password', [
+            'user_id' => $user->id,
+            'user' => $user->name,
+            'value' => $newPassword,
+        ])->with('status', "Generated a new temporary password for {$user->name}.");
     }
 
     public function destroy(User $user)

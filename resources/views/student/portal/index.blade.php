@@ -9,9 +9,9 @@
 
     <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">Welcome, {{ $user->name }}</h2>
-        <p class="text-gray-600">Student Number: {{ $user->student_number ?? 'N/A' }}</p>
+        <p class="text-gray-600">Student Number: <b>{{ $user->student_number ?? 'N/A' }} </b></p>
         @if($user->program)
-            <p class="text-gray-600">Program: {{ $user->program->name }}</p>
+            <p class="text-gray-600">Program: <b>{{ $user->program->name }}</b></p>
         @endif
     </div>
 
@@ -25,7 +25,7 @@
                 <div class="bg-gray-50 px-6 py-4 border-b">
                     <h3 class="text-lg font-semibold text-gray-900">{{ $semesterKey }}</h3>
                 </div>
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Code</th>

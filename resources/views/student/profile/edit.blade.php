@@ -18,29 +18,28 @@
         <h2 class="text-lg font-semibold mb-4">Profile Information</h2>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700">Name</label>
-                <div class="mt-1 text-sm text-gray-900">{{ $user->name }}</div>
-            </div>
-            <div>
                 <label class="block text-sm font-medium text-gray-700">Student Number</label>
-                <div class="mt-1 text-sm text-gray-900">{{ $user->student_number ?? 'N/A' }}</div>
+                <div class="mt-1 text-lg text-gray-900 font-medium">{{ $user->student_number ?? 'N/A' }}</div>
+            </div>
+            <br>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Name</label>
+                <div class="mt-1 text-lg text-gray-900 font-medium">{{ $user->name }}</div>
             </div>
             @if($user->email)
+                <br>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
                     <div class="mt-1 text-sm text-gray-900">{{ $user->email }}</div>
                 </div>
             @endif
             @if($user->program)
+                <br>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Program</label>
-                    <div class="mt-1 text-sm text-gray-900">{{ $user->program->name }}</div>
+                    <div class="mt-1 text-lg text-gray-900 font-medium">{{ $user->program->name }}</div>
                 </div>
             @endif
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Role</label>
-                <div class="mt-1 text-sm text-gray-900 capitalize">{{ $user->role }}</div>
-            </div>
         </div>
         <p class="mt-4 text-sm text-gray-500">Note: Profile information cannot be changed. Please contact an administrator if you need to update your information.</p>
     </div>

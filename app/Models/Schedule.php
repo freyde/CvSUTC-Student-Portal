@@ -20,6 +20,9 @@ class Schedule extends Model
         'year',
         'section',
         'instructor_id',
+        'approval_pin',
+        'finalized_at',
+        'finalized_by',
     ];
 
     public function course(): BelongsTo
@@ -51,5 +54,9 @@ class Schedule extends Model
     {
         return $this->hasMany(Enrollment::class);
     }
-}
 
+    public function finalizer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'finalized_by');
+    }
+}

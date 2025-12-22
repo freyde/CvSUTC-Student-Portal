@@ -10,7 +10,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
@@ -22,14 +22,14 @@
                 @forelse($academicYears as $academicYear)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $academicYear->year }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                             @if($academicYear->is_active)
                                 <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Active</span>
                             @else
                                 <span class="px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">Inactive</span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-medium">
                             <button onclick="openEditModal({{ $academicYear->id }}, '{{ $academicYear->year }}', {{ $academicYear->is_active ? 'true' : 'false' }})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
                             <form action="{{ route('admin.academic-years.destroy', $academicYear) }}" method="POST" class="inline">
                                 @csrf

@@ -274,5 +274,35 @@ class ScheduleController extends Controller
         
         return redirect()->route('admin.schedules.index')->with('status', $message);
     }
+
+    /**
+     * Generate approval PINs for all schedules that don't have one yet.
+     */
+    public function generateAllPins()
+    {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        $schedulesWithoutPin = Schedule::whereNull('approval_pin')->orWhere('approval_pin', '')->get();
+        $generated = 0;
+
+        foreach ($schedulesWithoutPin as $schedule) {
+            // Generate a random 6-digit PIN
+            $pin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            
+            // Ensure uniqueness (very unlikely but check anyway)
+            while (Schedule::where('approval_pin', $pin)->exists()) {
+                $pin = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            }
+
+            $schedule->update(['approval_pin' => $pin]);
+            $generated++;
+        }
+
+        $message = $generated > 0 
+            ? "Generated PINs for {$generated} schedule(s)." 
+            : "All schedules already have PINs assigned.";
+
+        return redirect()->route('admin.schedules.index')->with('status', $message);
+    }
 }
 

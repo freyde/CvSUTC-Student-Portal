@@ -18,12 +18,17 @@
                 <a href="{{ route('admin.courses.index') }}">Courses</a>
                 <a href="{{ route('admin.academic-years.index') }}">Academic Years</a>
                 <a href="{{ route('admin.semesters.index') }}">Semesters</a>
+                <a href="{{ route('admin.departments.index') }}">Departments</a>
                 <a href="{{ route('admin.schedules.index') }}">Schedules</a>
                 <a href="{{ route('admin.enrollments.index') }}">Enrollments</a>
                 <a href="{{ route('admin.grades.index') }}">Grades</a>
             @endif
             @if(auth()->user()->isTeacher() || auth()->user()->isAdmin())
-                <!-- <a href="{ route('teacher.courses.index') }">My Courses</a> -->
+                <a href="{{ route('grades.select-schedule') }}">Teacher Grades</a>
+                @if(optional(auth()->user()->department)->chair_id === auth()->id())
+                    <a href="{{ route('teacher.chair.view-pins') }}">View Schedule PINs</a>
+                    <a href="{{ route('teacher.chair.schedule-pins') }}">Manage PINs</a>
+                @endif
             @endif
             @if(auth()->user()->isStudent())
                 <a href="{{ route('student.portal.index') }}">My Grades</a>
@@ -34,7 +39,8 @@
             </form>
             <a href="{{ route('logout.get') }}" class="sm:hidden ml-auto px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black">Logout</a>
         @else
-            <a href="{{ route('login') }}" class="ml-auto px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black">Login</a>
+            <a href="{{ route('grades.select-schedule') }}" class="ml-auto px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black">Enter Grades</a>
+            <a href="{{ route('login') }}" class="px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black">Login</a>
         @endauth
     </nav>
     <main class="p-6 max-w-5xl mx-auto">
