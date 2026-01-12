@@ -56,6 +56,7 @@
                 <option value="">Select Role</option>
                 <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
                 <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
+                <option value="department_chair" {{ old('role') == 'department_chair' ? 'selected' : '' }}>Department Chair</option>
                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
@@ -82,6 +83,21 @@
             </select>
             <x-input-error :messages="$errors->get('program_id')" class="mt-2" />
             <p class="mt-1 text-sm text-gray-600">Optional for students</p>
+        </div>
+
+        <!-- Department (shown only for department_chair role) -->
+        <div id="department_field" style="display: none;">
+            <x-input-label for="department_id" :value="__('Department')" />
+            <select id="department_id" name="department_id" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Select Department</option>
+                @foreach($departments as $department)
+                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                        {{ $department->name }} ({{ $department->code }})
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('department_id')" class="mt-2" />
+            <p class="mt-1 text-sm text-gray-600">Required for department chairs</p>
         </div>
 
         <div class="flex items-center justify-end mt-4">
@@ -136,6 +152,8 @@ Ana Student,,student,2023-00001,BSCS</pre>
         const studentNumberField = document.getElementById('student_number_field');
         const studentNumberInput = document.getElementById('student_number');
         const programField = document.getElementById('program_field');
+        const departmentField = document.getElementById('department_field');
+        const departmentInput = document.getElementById('department_id');
         const emailInput = document.getElementById('email');
         const emailHelp = document.getElementById('email_help');
         
@@ -143,26 +161,45 @@ Ana Student,,student,2023-00001,BSCS</pre>
             studentNumberField.style.display = 'block';
             studentNumberInput.setAttribute('required', 'required');
             programField.style.display = 'block';
+            departmentField.style.display = 'none';
+            departmentInput.removeAttribute('required');
             emailInput.removeAttribute('required');
             emailHelp.textContent = 'Optional for students (not used for login)';
+        } else if (this.value === 'department_chair') {
+            studentNumberField.style.display = 'none';
+            studentNumberInput.removeAttribute('required');
+            programField.style.display = 'none';
+            departmentField.style.display = 'block';
+            departmentInput.setAttribute('required', 'required');
+            emailInput.setAttribute('required', 'required');
+            emailHelp.textContent = 'Required for teachers, department chairs, and admins';
         } else {
             studentNumberField.style.display = 'none';
             studentNumberInput.removeAttribute('required');
             programField.style.display = 'none';
+            departmentField.style.display = 'none';
+            departmentInput.removeAttribute('required');
             emailInput.setAttribute('required', 'required');
-            emailHelp.textContent = 'Required for teachers and admins';
+            emailHelp.textContent = 'Required for teachers, department chairs, and admins';
         }
     });
     
     // Initialize on page load
-    if (document.getElementById('role').value === 'student') {
+    const roleValue = document.getElementById('role').value;
+    if (roleValue === 'student') {
         document.getElementById('student_number_field').style.display = 'block';
         document.getElementById('student_number').setAttribute('required', 'required');
         document.getElementById('program_field').style.display = 'block';
         document.getElementById('email').removeAttribute('required');
         document.getElementById('email_help').textContent = 'Optional for students (not used for login)';
+    } else if (roleValue === 'department_chair') {
+        document.getElementById('department_field').style.display = 'block';
+        document.getElementById('department_id').setAttribute('required', 'required');
+        document.getElementById('email').setAttribute('required', 'required');
+        document.getElementById('email_help').textContent = 'Required for teachers, department chairs, and admins';
     } else {
         document.getElementById('email').setAttribute('required', 'required');
+        document.getElementById('email_help').textContent = 'Required for teachers, department chairs, and admins';
     }
 </script>
 @endsection

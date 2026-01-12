@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Teacher\CourseController as TeacherCourseController;
 use App\Http\Controllers\Teacher\GradeController as TeacherGradeController;
 use App\Http\Controllers\Teacher\ChairScheduleController;
+use App\Http\Controllers\Teacher\ChairController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\AcademicYearController;
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
     // Student portal routes
     Route::prefix('student-portal')->name('student.')->group(function () {
         Route::get('/', [PortalController::class, 'index'])->name('portal.index');
+        Route::get('/certificate', [PortalController::class, 'printCertificate'])->name('portal.certificate');
         Route::get('/profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.update-password');
     });
@@ -71,25 +73,30 @@ Route::middleware('auth')->group(function () {
 
     // Teacher routes (require auth)
     Route::prefix('teacher')->name('teacher.')->group(function () {
+        Route::get('dashboard', function () {
+            return view('teacher.dashboard');
+        })->name('dashboard');
+        
         Route::get('courses', [TeacherCourseController::class, 'index'])->name('courses.index');
         Route::get('courses/create', [TeacherCourseController::class, 'create'])->name('courses.create');
         Route::post('courses', [TeacherCourseController::class, 'store'])->name('courses.store');
 
         // Department chair routes
+        Route::get('chair/dashboard', [ChairController::class, 'index'])->name('chair.dashboard');
         Route::get('chair/schedule-pins', [ChairScheduleController::class, 'managePins'])->name('chair.schedule-pins');
         Route::get('chair/view-pins', [ChairScheduleController::class, 'viewPins'])->name('chair.view-pins');
         Route::post('chair/schedule-pins', [ChairScheduleController::class, 'updatePin'])->name('chair.schedule-pins.update');
         Route::get('chair/schedule-info', [ChairScheduleController::class, 'scheduleInfo'])->name('chair.schedule-info');
     });
-});
 
-// Public grade entry routes (no login required, protected by PIN)
-Route::prefix('grades')->name('grades.')->group(function () {
-    Route::get('/', [TeacherGradeController::class, 'selectSchedule'])->name('select-schedule');
-    Route::post('/show', [TeacherGradeController::class, 'showSchedule'])->name('show-schedule');
-    Route::get('/schedule-info', [TeacherGradeController::class, 'scheduleInfo'])->name('schedule-info');
-    Route::post('/{schedule}/enrollments/{enrollment}', [TeacherGradeController::class, 'upsert'])->name('upsert');
-    Route::post('/{schedule}/finalize', [TeacherGradeController::class, 'finalize'])->name('finalize');
+    // Grade entry routes (accessible to admins, teachers, and department chairs)
+    Route::prefix('grades')->name('grades.')->group(function () {
+        Route::get('/', [TeacherGradeController::class, 'selectSchedule'])->name('select-schedule');
+        Route::post('/show', [TeacherGradeController::class, 'showSchedule'])->name('show-schedule');
+        Route::get('/schedule-info', [TeacherGradeController::class, 'scheduleInfo'])->name('schedule-info');
+        Route::post('/{schedule}/enrollments/{enrollment}', [TeacherGradeController::class, 'upsert'])->name('upsert');
+        Route::post('/{schedule}/finalize', [TeacherGradeController::class, 'finalize'])->name('finalize');
+    });
 });
 
 require __DIR__.'/auth.php';

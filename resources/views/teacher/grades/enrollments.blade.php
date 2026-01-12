@@ -42,70 +42,68 @@
         </div>
     @endif
 
-    <div class="overflow-x-auto bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-        <table class="w-full divide-y divide-gray-300 text-sm">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-500">Student</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-500">Student No.</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-500">Grade Item</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-500">Score</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-500">Action</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach($enrollments as $enrollment)
-                    @php
-                        $grade = $enrollment->grades->firstWhere('item', 'Final');
-                    @endphp
-                    <tr>
-                        <td class="px-4 py-2">{{ $enrollment->user->name }}</td>
-                        <td class="px-4 py-2">{{ $enrollment->user->student_number }}</td>
-                        <td class="px-4 py-2">Final</td>
-                        <td class="px-4 py-2">
-                            <form method="POST" action="{{ route('grades.upsert', [$schedule, $enrollment]) }}" class="flex items-center gap-2">
-                                @csrf
-                                <input type="hidden" name="item" value="Final">
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    max="100"
-                                    name="score"
-                                    value="{{ old('score', optional($grade)->score) }}"
-                                    class="w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    @if($schedule->finalized_at) disabled @endif
-                                >
-                                <button
-                                    type="submit"
-                                    class="px-3 py-1 rounded bg-gray-900 text-white hover:bg-black text-xs"
-                                    @if($schedule->finalized_at) disabled @endif
-                                >
-                                    Save
-                                </button>
-                            </form>
-                        </td>
-                        <td class="px-4 py-2"></td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <div class="bg-white rounded-lg shadow p-4">
-        @if($schedule->finalized_at)
+    @if($schedule->finalized_at)
+        <div class="bg-white rounded-lg shadow p-4">
             <p class="text-sm text-green-700">
                 Grades for this schedule were finalized on {{ $schedule->finalized_at->format('M d, Y H:i') }}.
             </p>
-        @else
-            <form method="POST" action="{{ route('grades.finalize', $schedule) }}" class="space-y-3">
-                @csrf
-                <h2 class="text-sm font-semibold text-gray-800">Finalize Grades</h2>
-                <p class="text-xs text-gray-600">
-                    Once finalized, grades for this schedule will be locked. Enter the <strong>schedule approval PIN</strong>
+        </div>
+    @else
+        <form method="POST" action="{{ route('grades.finalize', $schedule) }}" class="space-y-6" id="finalize-form">
+            @csrf
+            
+            <div class="overflow-x-auto bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+                <table class="w-full divide-y divide-gray-300 text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left font-medium text-gray-500">Student</th>
+                            <th class="px-4 py-2 text-left font-medium text-gray-500">Student No.</th>
+                            <th class="px-4 py-2 text-left font-medium text-gray-500">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($enrollments as $enrollment)
+                            @php
+                                $grade = $enrollment->grades->firstWhere('item', 'Final');
+                                $currentGrade = old("grades.{$enrollment->id}", optional($grade)->score);
+                            @endphp
+                            <tr>
+                                <td class="px-4 py-2">{{ $enrollment->user->name }}</td>
+                                <td class="px-4 py-2 text-center">{{ $enrollment->user->student_number }}</td>
+                                <td class="px-4 py-2 text-center">
+                                    <select
+                                        name="grades[{{ $enrollment->id }}]"
+                                        class="w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    >
+                                        <option value="">----</option>
+                                        <option value="1.00" {{ $currentGrade == '1.00' ? 'selected' : '' }}>1.00</option>
+                                        <option value="1.25" {{ $currentGrade == '1.25' ? 'selected' : '' }}>1.25</option>
+                                        <option value="1.50" {{ $currentGrade == '1.50' ? 'selected' : '' }}>1.50</option>
+                                        <option value="1.75" {{ $currentGrade == '1.75' ? 'selected' : '' }}>1.75</option>
+                                        <option value="2.00" {{ $currentGrade == '2.00' ? 'selected' : '' }}>2.00</option>
+                                        <option value="2.25" {{ $currentGrade == '2.25' ? 'selected' : '' }}>2.25</option>
+                                        <option value="2.50" {{ $currentGrade == '2.50' ? 'selected' : '' }}>2.50</option>
+                                        <option value="2.75" {{ $currentGrade == '2.75' ? 'selected' : '' }}>2.75</option>
+                                        <option value="3.00" {{ $currentGrade == '3.00' ? 'selected' : '' }}>3.00</option>
+                                        <option value="4.00" {{ $currentGrade == '4.00' ? 'selected' : '' }}>4.00</option>
+                                        <option value="INC" {{ $currentGrade == 'INC' ? 'selected' : '' }}>INC</option>
+                                        <option value="DRP" {{ $currentGrade == 'DRP' ? 'selected' : '' }}>DRP</option>
+                                        <option value="5.00" {{ $currentGrade == '5.00' ? 'selected' : '' }}>5.00</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-sm font-semibold text-gray-800 mb-2">Finalize Grades</h2>
+                <p class="text-xs text-gray-600 mb-4">
+                    Enter grades for all students using the dropdown menus above. Once finalized, grades for this schedule will be locked. Enter the <strong>schedule approval PIN</strong>
                     provided by your department chair to confirm.
                 </p>
-                <div class="max-w-xs">
+                <div class="max-w-xs mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Schedule Approval PIN</label>
                     <input
                         type="password"
@@ -119,12 +117,12 @@
                         type="submit"
                         class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black text-sm font-semibold"
                     >
-                        Finalize Grades
+                        Save & Finalize Grades
                     </button>
                 </div>
-            </form>
-        @endif
-    </div>
+            </div>
+        </form>
+    @endif
 </div>
 @endsection
 

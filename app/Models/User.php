@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function chairedDepartment(): HasMany
+    {
+        return $this->hasMany(Department::class, 'chair_id');
+    }
+
+    public function isDepartmentChair(): bool
+    {
+        return Department::where('chair_id', $this->id)->exists();
+    }
 }

@@ -30,8 +30,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Only allow teachers and admins to proceed; otherwise log out and error
-        if (Auth::user()->isTeacher() || Auth::user()->isAdmin()) {
+        if (Auth::user()->isAdmin()) {
             return redirect()->intended(route('dashboard', absolute: false));
+        }
+        
+        if (Auth::user()->isTeacher()) {
+            // Redirect department chairs to their dashboard, regular teachers to teacher dashboard
+            if (Auth::user()->isDepartmentChair()) {
+                return redirect()->intended(route('teacher.chair.dashboard', absolute: false));
+            }
+            return redirect()->intended(route('teacher.dashboard', absolute: false));
         }
 
         Auth::logout();

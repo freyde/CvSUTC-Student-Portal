@@ -4,7 +4,12 @@
 <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Student Portal</h1>
-        <a href="{{ route('student.profile.edit') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">My Profile</a>
+        <div class="flex gap-2">
+            @if(!$groupedEnrollments->isEmpty())
+                <a href="{{ route('student.portal.certificate') }}" target="_blank" class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Print Certificate of Grade</a>
+            @endif
+            <a href="{{ route('student.profile.edit') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">My Profile</a>
+        </div>
     </div>
 
     <div class="mb-6">

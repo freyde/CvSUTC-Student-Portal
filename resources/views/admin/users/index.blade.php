@@ -68,7 +68,7 @@
 
     <div class="border-b border-gray-200 mb-4">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-            @php($tabs = ['all' => 'All', 'student' => 'Students', 'teacher' => 'Teachers', 'admin' => 'Admins'])
+            @php($tabs = ['all' => 'All', 'student' => 'Students', 'chair' => 'Department Chairs', 'teacher' => 'Teachers', 'admin' => 'Admins'])
             @foreach ($tabs as $value => $label)
                 <a href="{{ route('admin.users.index', ['role' => $value, 'search' => request('search')]) }}" class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium {{ $role === $value ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">{{ $label }}</a>
             @endforeach

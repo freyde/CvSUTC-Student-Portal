@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -23,7 +24,14 @@ class UserController extends Controller
         $query = User::with('program')->orderBy('name');
         
         // Role filter
-        if (in_array($role, ['student', 'teacher', 'admin'])) {
+        if ($role === 'chair') {
+            // Show users who are department chairs (check if they exist as chair_id in departments table)
+            $query->whereIn('id', DB::table('departments')->select('chair_id')->whereNotNull('chair_id'));
+        } elseif ($role === 'teacher') {
+            // Show teachers who are NOT department chairs
+            $query->where('role', 'teacher')
+                  ->whereNotIn('id', DB::table('departments')->select('chair_id')->whereNotNull('chair_id'));
+        } elseif (in_array($role, ['student', 'admin'])) {
             $query->where('role', $role);
         }
         

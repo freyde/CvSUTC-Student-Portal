@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,12 @@ class ChairScheduleController extends Controller
         $this->authorizeChair();
 
         $user = Auth::user();
-        $department = $user->department;
+        // Get the department this user chairs (not the department they belong to)
+        $department = Department::where('chair_id', $user->id)->first();
+
+        if (!$department) {
+            abort(403, 'You are not assigned as a department chair.');
+        }
 
         // Get all schedules where the instructor belongs to this department
         $schedules = Schedule::whereHas('instructor', function($query) use ($department) {
@@ -102,9 +108,7 @@ class ChairScheduleController extends Controller
 
         abort_unless(
             $user &&
-            $user->isTeacher() &&
-            $user->department &&
-            $user->department->chair_id === $user->id,
+            $user->isDepartmentChair(),
             403
         );
     }

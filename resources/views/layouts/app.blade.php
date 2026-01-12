@@ -23,12 +23,15 @@
                 <a href="{{ route('admin.enrollments.index') }}">Enrollments</a>
                 <a href="{{ route('admin.grades.index') }}">Grades</a>
             @endif
-            @if(auth()->user()->isTeacher() || auth()->user()->isAdmin())
+            @if(auth()->user()->isDepartmentChair())
+                <a href="{{ route('teacher.chair.dashboard') }}">Dashboard</a>
                 <a href="{{ route('grades.select-schedule') }}">Teacher Grades</a>
-                @if(optional(auth()->user()->department)->chair_id === auth()->id())
-                    <a href="{{ route('teacher.chair.view-pins') }}">View Schedule PINs</a>
-                    <a href="{{ route('teacher.chair.schedule-pins') }}">Manage PINs</a>
-                @endif
+                <a href="{{ route('teacher.chair.view-pins') }}">View Schedule PINs</a>
+                <a href="{{ route('teacher.chair.schedule-pins') }}">Manage PINs</a>
+            @elseif(auth()->user()->isTeacher())
+                <a href="{{ route('teacher.dashboard') }}">Dashboard</a>
+                <a href="{{ route('grades.select-schedule') }}">Teacher Grades</a>
+                <a href="{{ route('teacher.courses.index') }}">My Courses</a>
             @endif
             @if(auth()->user()->isStudent())
                 <a href="{{ route('student.portal.index') }}">My Grades</a>
