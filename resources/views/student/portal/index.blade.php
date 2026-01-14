@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-semibold">Student Portal</h1>
         <div class="flex gap-2">
             @if(!$groupedEnrollments->isEmpty())
-                <a href="{{ route('student.portal.certificate') }}" target="_blank" class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Print Certificate of Grade</a>
+                <a href="{{ route('student.portal.certificate') }}" target="_blank" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-indigo-700">Print Certificate of Grade</a>
             @endif
             <a href="{{ route('student.profile.edit') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">My Profile</a>
         </div>
@@ -49,16 +49,16 @@
                                              ($enrollment->schedule->course->lab_unit ?? $enrollment->course->lab_unit ?? 0);
                             @endphp
                             <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center">
                                     {{ $enrollment->schedule->course->code ?? $enrollment->course->code }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
                                     {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{ $finalGrade->score ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {{ $totalUnits }}
                                 </td>
                             </tr>
