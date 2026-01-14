@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        Schema::dropIfExists('program_course');
         Schema::create('program_course', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('program_id')->index();
