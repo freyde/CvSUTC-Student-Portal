@@ -24,7 +24,7 @@ class ChairScheduleController extends Controller
     /**
      * View all schedules in the chair's department with their PINs.
      */
-    public function viewPins()
+    public function viewPins(Request $request)
     {
         $this->authorizeChair();
 
@@ -36,13 +36,23 @@ class ChairScheduleController extends Controller
             abort(403, 'You are not assigned as a department chair.');
         }
 
-        // Get all schedules where the instructor belongs to this department
-        $schedules = Schedule::whereHas('instructor', function($query) use ($department) {
-            $query->where('department_id', $department->id);
-        })
-        ->with(['course', 'program', 'academicYear', 'semester', 'instructor'])
-        ->orderBy('schedule_code')
-        ->get();
+        // Only show results when searching a schedule code (requested UX).
+        // Still constrain results to this chair's department, but allow unassigned instructors.
+        $search = trim((string) $request->query('search', ''));
+
+        $schedules = collect();
+        if ($search !== '') {
+            $schedules = Schedule::query()
+                ->where('schedule_code', 'like', "%{$search}%")
+                ->where(function ($q) use ($department) {
+                    $q->whereHas('instructor', function ($query) use ($department) {
+                        $query->where('department_id', $department->id);
+                    })->orWhereNull('instructor_id');
+                })
+                ->with(['course', 'program', 'academicYear', 'semester', 'instructor'])
+                ->orderBy('schedule_code')
+                ->get();
+        }
 
         return view('teacher.chair.view-pins', compact('schedules', 'department'));
     }

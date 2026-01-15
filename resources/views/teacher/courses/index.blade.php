@@ -16,9 +16,9 @@
                 Manage PINs
             </a>
         @endif
-        <a href="{{ route('teacher.courses.create') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">
+        <!-- <a href="{{ route('teacher.courses.create') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">
             Create Course
-        </a>
+        </a> -->
     </div>
 </div>
 <div class="bg-white rounded-lg shadow overflow-hidden">

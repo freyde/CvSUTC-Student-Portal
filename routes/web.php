@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\SchedulePinController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -69,6 +70,12 @@ Route::middleware('auth')->group(function () {
         Route::post('users/{user}/generate-password', [AdminUserController::class, 'generatePassword'])->name('users.generate-password');
         Route::post('users/{user}/view-password', [AdminUserController::class, 'viewPassword'])->name('users.view-password');
         Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+        // Schedule PIN management
+        Route::get('schedule-pins/manage', [SchedulePinController::class, 'managePins'])->name('schedule-pins.manage');
+        Route::get('schedule-pins/view', [SchedulePinController::class, 'viewPins'])->name('schedule-pins.view');
+        Route::post('schedule-pins/update', [SchedulePinController::class, 'updatePin'])->name('schedule-pins.update');
+        Route::get('schedule-pins/info', [SchedulePinController::class, 'scheduleInfo'])->name('schedule-pins.info');
     });
 
     // Teacher routes (require auth)

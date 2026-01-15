@@ -22,6 +22,8 @@
                 <a href="{{ route('admin.schedules.index') }}">Schedules</a>
                 <a href="{{ route('admin.enrollments.index') }}">Enrollments</a>
                 <a href="{{ route('admin.grades.index') }}">Grades</a>
+                <a href="{{ route('admin.schedule-pins.view') }}">View PINs</a>
+                <a href="{{ route('admin.schedule-pins.manage') }}">Manage PINs</a>
             @endif
             @if(auth()->user()->isDepartmentChair())
                 <a href="{{ route('teacher.chair.dashboard') }}">Dashboard</a>

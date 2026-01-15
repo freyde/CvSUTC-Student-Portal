@@ -3,10 +3,10 @@
 @section('content')
 <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">View Schedule PINs - {{ $department->name }}</h1>
-        <!-- <a href="{{ route('teacher.chair.schedule-pins') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">
+        <h1 class="text-2xl font-semibold">View Schedule PINs</h1>
+        <a href="{{ route('admin.schedule-pins.manage') }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">
             Manage PINs
-        </a> -->
+        </a>
     </div>
 
     @if (session('status'))
@@ -15,35 +15,23 @@
 
     <!-- Search Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <form method="GET" action="{{ route('teacher.chair.view-pins') }}" class="flex gap-4">
+        <form method="GET" action="{{ route('admin.schedule-pins.view') }}" class="flex gap-4">
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search by Schedule Code</label>
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Enter schedule code..."
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                >
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Enter schedule code..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <div class="flex items-end">
                 <button type="submit" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black">Search</button>
                 @if(request('search'))
-                    <a href="{{ route('teacher.chair.view-pins') }}" class="ml-2 px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Clear</a>
+                    <a href="{{ route('admin.schedule-pins.view') }}" class="ml-2 px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Clear</a>
                 @endif
             </div>
         </form>
     </div>
 
-    @if(!request('search'))
-        <p class="mb-4 text-gray-600">
-            Enter a <strong>schedule code</strong> above to view its approval PIN.
-        </p>
-    @else
-        <p class="mb-4 text-gray-600">
-            Showing results for schedule code matching: <strong>{{ request('search') }}</strong>
-        </p>
-    @endif
+    <p class="mb-4 text-gray-600">
+        Below are all schedules with their PINs. PINs are shown for schedules that have been assigned one.
+    </p>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
@@ -88,16 +76,17 @@
                 @empty
                     <tr>
                         <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                            @if(request('search'))
-                                No schedules found for the searched schedule code.
-                            @else
-                                Search a schedule code to display results.
-                            @endif
+                            No schedules found.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $schedules->links() }}
     </div>
 </div>
 @endsection
