@@ -4,7 +4,7 @@
     
     <form method="POST" action="{{ route('student.login.post') }}">
         @csrf
-        <div>
+        <div class="text-center">
             <p><h3>CvSU - Tanza Student Portal<h3></p>
             <br>
         </div>

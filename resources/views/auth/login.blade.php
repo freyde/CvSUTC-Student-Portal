@@ -4,14 +4,14 @@
     
     <form method="POST" action="{{ route('login') }}">
         @csrf
-        <div>
+        <div class="text-center">
             <p><h3>CvSU - Tanza Grade Management System<h3></p>
             <br>
         </div>
 
         <!-- Email Address (Teachers/Admins Only) -->
         <div>
-            <x-input-label for="login" :value="__('Email')" />
+            <x-input-label for="login" :value="__('CvSU Email')" />
             <x-text-input id="login" class="block mt-1 w-full" type="email" name="login" :value="old('login')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('login')" class="mt-2" />
         </div>
