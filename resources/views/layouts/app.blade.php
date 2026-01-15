@@ -46,7 +46,7 @@
             <a href="{{ route('login') }}" class="px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black">Login</a>
         @endauth
     </nav>
-    <main class="p-6 max-w-5xl mx-auto">
+    <main class="p-6 max-w-7xl mx-auto">
         @if(session('status'))
             <div class="mb-4 rounded border border-green-200 bg-green-50 px-3 py-2 text-green-800">{{ session('status') }}</div>
         @endif
