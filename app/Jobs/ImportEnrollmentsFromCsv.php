@@ -47,7 +47,16 @@ class ImportEnrollmentsFromCsv implements ShouldQueue
 
         $flushBuffer = function () use (&$buffer) {
             if (empty($buffer)) return;
-            Enrollment::upsert($buffer, ['user_id','schedule_id'], []);
+            try {
+                Enrollment::upsert($buffer, ['user_id','schedule_id'], []);
+            } catch (\Throwable $e) {
+                // Make failures visible in logs / failed_jobs
+                Log::error('Enrollment import: upsert failed', [
+                    'error' => $e->getMessage(),
+                    'count' => count($buffer),
+                ]);
+                throw $e;
+            }
             $buffer = [];
         };
 

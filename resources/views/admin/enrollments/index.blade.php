@@ -113,6 +113,10 @@
             <p class="text-sm text-gray-600 mb-4">
                 <strong>CSV format:</strong> student_number, schedule_code<br>
                 <strong>Example:</strong> S-0001, SCH001
+                <br>
+                <span class="text-xs text-gray-500">
+                    Note: Imports run in the background via the queue. In local/dev, ensure a worker is running (e.g. <code>php artisan queue:work --queue=imports</code>).
+                </span>
             </p>
             <form action="{{ route('admin.enrollments.import-csv') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -139,6 +143,21 @@
             </ul>
         </div>
     @endif
+
+    <script>
+        // If validation errors happened, auto-open the right modal so errors are visible.
+        (function () {
+            const hasManualErrors = @json($errors->has('student_number') || $errors->has('schedule_code'));
+            const hasCsvErrors = @json($errors->has('csv_file'));
+
+            if (hasManualErrors) {
+                document.getElementById('create-enrollment-modal')?.classList.remove('hidden');
+            }
+            if (hasCsvErrors) {
+                document.getElementById('csv-upload-modal')?.classList.remove('hidden');
+            }
+        })();
+    </script>
 </div>
 @endsection
 

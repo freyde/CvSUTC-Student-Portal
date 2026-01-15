@@ -98,8 +98,14 @@ class EnrollmentController extends Controller
 
         $stored = $request->file('csv_file')->store('imports/enrollments');
 
-        // Dispatch a splitter job that creates chunk files and enqueues per-chunk import jobs
-        SplitEnrollmentsImport::dispatch($stored)->onQueue('imports');
+        // In local/dev, run synchronously so "Import" works even without a queue worker running.
+        // In production, dispatch to the queue.
+        if (app()->environment('local')) {
+            SplitEnrollmentsImport::dispatchSync($stored);
+        } else {
+            // Dispatch a splitter job that creates chunk files and enqueues per-chunk import jobs
+            SplitEnrollmentsImport::dispatch($stored)->onQueue('imports');
+        }
 
         return redirect()->route('admin.enrollments.index')->with('status', 'Import started. This may take a while. You can navigate away; data will appear as it completes.');
     }
