@@ -76,7 +76,7 @@
     </div>
 
     <div class="overflow-x-auto bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-        <table class="w-full table-fixed divide-y divide-gray-300">
+        <table class="w-full table-auto divide-y divide-gray-300">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
