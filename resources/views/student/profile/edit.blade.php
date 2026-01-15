@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto px-4 sm:px-0">
     <div class="mb-6">
         <h1 class="text-2xl font-semibold">My Profile</h1>
         <a href="{{ route('student.portal.index') }}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">← Back to Portal</a>
