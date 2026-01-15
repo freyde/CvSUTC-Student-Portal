@@ -27,7 +27,7 @@
                 <a href="{{ route('teacher.chair.dashboard') }}">Dashboard</a>
                 <a href="{{ route('grades.select-schedule') }}">Teacher Grades</a>
                 <a href="{{ route('teacher.chair.view-pins') }}">View Schedule PINs</a>
-                <a href="{{ route('teacher.chair.schedule-pins') }}">Manage PINs</a>
+                <!-- <a href="{{ route('teacher.chair.schedule-pins') }}">Manage PINs</a> -->
             @elseif(auth()->user()->isTeacher())
                 <a href="{{ route('teacher.dashboard') }}">Dashboard</a>
                 <a href="{{ route('grades.select-schedule') }}">Teacher Grades</a>

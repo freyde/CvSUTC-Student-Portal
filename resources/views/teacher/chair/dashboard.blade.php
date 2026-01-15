@@ -11,13 +11,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Manage Schedule PINs Card -->
-        <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 p-6">
+        <!-- <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 p-6">
             <h2 class="text-lg font-semibold mb-2">Manage Schedule PINs</h2>
             <p class="text-gray-600 text-sm mb-4">Assign or update approval PINs for schedule codes.</p>
             <a href="{{ route('teacher.chair.schedule-pins') }}" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500">
                 Manage PINs
             </a>
-        </div>
+        </div> -->
 
         <!-- View Schedule PINs Card -->
         <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 p-6">
