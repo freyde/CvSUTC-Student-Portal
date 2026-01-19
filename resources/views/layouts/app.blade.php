@@ -85,7 +85,8 @@
                                 </button>
                                 <div x-show="openEnrollments" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                                     <a href="{{ route('admin.enrollments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Enrollments</a>
-                                    <a href="{{ route('admin.grades.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Grades</a>
+                                    <a href="{{ route('admin.grades.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Manage Grades</a>
+                                    <a href="{{ route('grades.select-schedule') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Upload Grades</a>
                                 </div>
                             </div>
 

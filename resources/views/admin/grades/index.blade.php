@@ -6,26 +6,6 @@
         <h1 class="text-2xl font-semibold">Manage Grades</h1>
     </div>
 
-    <!-- Valid Grades Reference -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-2">Valid Grade Values:</h2>
-        <div class="flex flex-wrap gap-2">
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.00</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.25</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.50</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">1.75</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.00</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.25</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.50</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">2.75</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">3.00</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">4.00</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">Drp.</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">Inc.</span>
-            <span class="px-3 py-1 bg-white rounded border border-gray-300 text-sm">5.00</span>
-        </div>
-    </div>
-
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('admin.grades.index') }}" class="space-y-4">
