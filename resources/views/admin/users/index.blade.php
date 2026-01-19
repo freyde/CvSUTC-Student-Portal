@@ -110,13 +110,14 @@
                         @endif
                     </td>
                     <td class="px-4 py-2 text-sm text-left space-x-2 font-medium">
+                        <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
                         @if(!$user->password)
                         <form method="POST" action="{{ route('admin.users.generate-password', $user) }}" class="inline">
                             @csrf
                             <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3">Generate</button>
                         </form>
                         @endif
-                        @if(in_array($user->role, ['student','teacher']))
+                        @if($user->id !== auth()->id())
                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline" onsubmit="return confirm('Delete this user? This action cannot be undone.');">
                             @csrf
                             @method('DELETE')
@@ -178,7 +179,7 @@ Ana Student,,student,2023-00001,BSCS</pre>
                     <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
                         <div class="font-semibold mb-1">New Password</div>
                         <div class="text-sm">
-                            Password: <span class="font-mono px-2 py-1 bg-white border border-yellow-200 rounded">{{ session('generated_password.value') }}</span>
+                            Password: <span class="px-2 py-1 bg-white border border-yellow-200 rounded text-lg tracking-wider" style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; letter-spacing: 0.1em;">{{ session('generated_password.value') }}</span>
                         </div>
                         <p class="mt-2 text-xs text-gray-600">Share this password securely with the user. It will not be shown again.</p>
                     </div>

@@ -66,6 +66,8 @@ Route::middleware('auth')->group(function () {
 
         // Users management
         Route::get('users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::put('users/{user}', [AdminUserController::class, 'update'])->name('users.update');
         Route::post('users/import-csv', [AdminUserController::class, 'importFromCsv'])->name('users.import-csv');
         Route::post('users/{user}/generate-password', [AdminUserController::class, 'generatePassword'])->name('users.generate-password');
         Route::post('users/{user}/view-password', [AdminUserController::class, 'viewPassword'])->name('users.view-password');

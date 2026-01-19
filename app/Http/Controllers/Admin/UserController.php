@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Program;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -143,11 +144,29 @@ class UserController extends Controller
         return back()->with('status', $message);
     }
 
+    /**
+     * Generate a password with 8 characters, excluding confusing characters
+     * Excludes: O, 0, I, l, 1 (to avoid confusion between O/0, I/l/1)
+     */
+    private function generateSecurePassword($length = 8)
+    {
+        // Character set excluding confusing characters: O, 0, I, l, 1
+        $characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+        $password = '';
+        $max = strlen($characters) - 1;
+        
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[random_int(0, $max)];
+        }
+        
+        return $password;
+    }
+
     public function generatePassword(Request $request, User $user)
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
-        $newPassword = Str::random(12);
+        $newPassword = $this->generateSecurePassword(8);
         $user->update(['password' => Hash::make($newPassword)]);
 
         return back()->with('generated_password', [
@@ -166,7 +185,7 @@ class UserController extends Controller
         ]);
 
         // Passwords are hashed; generate a fresh temporary password to display
-        $newPassword = Str::random(12);
+        $newPassword = $this->generateSecurePassword(8);
         $user->update(['password' => Hash::make($newPassword)]);
 
         return back()->with('generated_password', [
@@ -176,16 +195,110 @@ class UserController extends Controller
         ])->with('status', "Generated a new temporary password for {$user->name}.");
     }
 
+    public function edit(User $user)
+    {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        $programs = Program::orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
+        
+        // Check if user is a department chair
+        $isDepartmentChair = $user->isDepartmentChair();
+        $chairedDepartment = $user->chairedDepartment()->first();
+
+        return view('admin.users.edit', compact('user', 'programs', 'departments', 'isDepartmentChair', 'chairedDepartment'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        $rules = [
+            'name' => ['required', 'string', 'max:255'],
+            'role' => ['required', 'string', 'in:student,teacher,admin,department_chair'],
+        ];
+
+        // Email validation - required for non-students, optional for students
+        if ($request->role !== 'student') {
+            $rules['email'] = ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id];
+        } else {
+            $rules['email'] = ['nullable', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id];
+            $rules['student_number'] = ['required', 'string', 'max:255', 'unique:users,student_number,' . $user->id];
+            $rules['program_id'] = ['nullable', 'exists:programs,id'];
+        }
+
+        // Department is required for department_chair role
+        if ($request->role === 'department_chair') {
+            $rules['department_id'] = ['required', 'exists:departments,id'];
+        }
+
+        $validated = $request->validate($rules);
+
+        // Store the old department chair status
+        $oldChairedDepartment = $user->chairedDepartment()->first();
+        
+        // Department chairs are stored as teachers
+        $role = $validated['role'] === 'department_chair' ? 'teacher' : $validated['role'];
+
+        // Prepare update data
+        $updateData = [
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'role' => $role,
+        ];
+
+        // Add student-specific fields
+        if ($role === 'student') {
+            $updateData['student_number'] = $validated['student_number'] ?? null;
+            $updateData['program_id'] = $validated['program_id'] ?? null;
+            $updateData['email'] = $validated['email'] ?? null;
+        } else {
+            // Clear student-specific fields for non-students
+            $updateData['student_number'] = null;
+            $updateData['program_id'] = null;
+        }
+
+        // Update the user
+        $user->update($updateData);
+
+        // Handle department chair assignment
+        if ($validated['role'] === 'department_chair' && isset($validated['department_id'])) {
+            // Remove old chair assignment if different
+            if ($oldChairedDepartment && $oldChairedDepartment->id != $validated['department_id']) {
+                $oldChairedDepartment->update(['chair_id' => null]);
+            }
+
+            // Assign new chair
+            $department = Department::find($validated['department_id']);
+            if ($department && $department->chair_id != $user->id) {
+                // Remove previous chair if exists
+                if ($department->chair_id) {
+                    $previousChair = User::find($department->chair_id);
+                    if ($previousChair) {
+                        // Don't remove if it's the same user
+                        if ($previousChair->id != $user->id) {
+                            $department->update(['chair_id' => null]);
+                        }
+                    }
+                }
+                $department->update(['chair_id' => $user->id]);
+            }
+        } else {
+            // If role changed from department_chair, remove chair assignment
+            if ($oldChairedDepartment) {
+                $oldChairedDepartment->update(['chair_id' => null]);
+            }
+        }
+
+        return redirect()->route('admin.users.index')->with('status', 'User updated successfully.');
+    }
+
     public function destroy(User $user)
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
         if ($user->id === Auth::id()) {
             return back()->with('status', 'You cannot delete your own account.');
-        }
-
-        if ($user->role === 'admin') {
-            return back()->with('status', 'You cannot delete admin accounts.');
         }
 
         try {
