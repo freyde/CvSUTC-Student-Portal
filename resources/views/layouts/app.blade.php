@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- Desktop Navigation Links -->
-                <div class="hidden md:flex md:items-center md:space-x-4 md:flex-1 md:justify-center md:ml-8">
+                <div class="hidden lg:flex lg:items-center lg:space-x-4 lg:flex-1 lg:justify-center lg:ml-8">
                     @auth
                         @if(auth()->user()->isAdmin())
                             <a href="{{ route('register') }}" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900">Register</a>
@@ -56,16 +56,16 @@
                 <!-- Right side: Logout/Login -->
                 <div class="flex items-center space-x-4">
                     @auth
-                        <form action="{{ route('logout') }}" method="POST" class="hidden md:block">
+                        <form action="{{ route('logout') }}" method="POST" class="hidden lg:block">
                             @csrf
                             <button type="submit" class="px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black text-sm">Logout</button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="hidden md:block px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black text-sm">Login</a>
+                        <a href="{{ route('login') }}" class="hidden lg:block px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black text-sm">Login</a>
                     @endauth
 
                     <!-- Mobile menu button -->
-                    <button @click="open = !open" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900">
+                    <button @click="open = !open" class="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             <path :class="{'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             <path :class="{'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -76,7 +76,7 @@
         </div>
 
         <!-- Mobile menu -->
-        <div x-show="open" x-cloak class="md:hidden border-t border-gray-200">
+        <div x-show="open" x-cloak class="lg:hidden border-t border-gray-200">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 @auth
                     @if(auth()->user()->isAdmin())
