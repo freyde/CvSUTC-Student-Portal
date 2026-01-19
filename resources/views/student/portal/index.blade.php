@@ -61,10 +61,10 @@
                                         {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                                        {{ $finalGrade->score ?? 'N/A' }}
+                                        {{ $finalGrade->score ?? '--' }}
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                                        {{ $totalUnits }}
+                                        {{ $finalGrade ? $totalUnits : '0' }}
                                     </td>
                                 </tr>
                             @endforeach
