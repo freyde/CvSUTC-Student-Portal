@@ -170,7 +170,8 @@ class GradeController extends Controller
             'finalized_by' => Auth::id(),
         ]);
 
-        return redirect()->back()
+        return redirect()
+            ->route('grades.select-schedule')
             ->with('status', 'All grades saved and finalized with department approval.');
     }
 

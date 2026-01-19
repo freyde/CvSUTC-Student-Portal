@@ -25,6 +25,10 @@ class Schedule extends Model
         'finalized_by',
     ];
 
+    protected $casts = [
+        'finalized_at' => 'datetime',
+    ];
+
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
