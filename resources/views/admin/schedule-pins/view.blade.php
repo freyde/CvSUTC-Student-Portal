@@ -51,7 +51,8 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $schedule->schedule_code }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ optional($schedule->course)->code }} - {{ optional($schedule->course)->title }}
+                            {{ optional($schedule->course)->code }} 
+                            <!-- - {{ optional($schedule->course)->title }} -->
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ optional($schedule->program)->code ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ optional($schedule->instructor)->name ?? 'N/A' }}</td>
