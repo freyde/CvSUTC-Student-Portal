@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Enrollment;
 use App\Models\Grade;
 use App\Models\Schedule;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -170,8 +171,7 @@ class GradeController extends Controller
             'finalized_by' => Auth::id(),
         ]);
 
-        return redirect()
-            ->route('grades.select-schedule')
+        return redirect()->back()
             ->with('status', 'All grades saved and finalized with department approval.');
     }
 
@@ -198,9 +198,16 @@ class GradeController extends Controller
     {
         $user = Auth::user();
 
-        // Admins can upload grades for all schedules
+        // Admins can always upload grades for all schedules
         if ($user->isAdmin()) {
             return;
+        }
+
+        // Check if grade upload is allowed for teachers and department chairs
+        $allowTeacherGradeUpload = Setting::get('allow_teacher_grade_upload', '1') === '1';
+        
+        if (!$allowTeacherGradeUpload) {
+            abort(403, 'Grade uploads are currently disabled for teachers and department chairs. Please contact an administrator.');
         }
 
         // Only the assigned instructor can upload grades

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\GradeController;
 use App\Http\Controllers\Admin\EnrollmentController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\SchedulePinController;
+use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -78,6 +79,10 @@ Route::middleware('auth')->group(function () {
         Route::get('schedule-pins/view', [SchedulePinController::class, 'viewPins'])->name('schedule-pins.view');
         Route::post('schedule-pins/update', [SchedulePinController::class, 'updatePin'])->name('schedule-pins.update');
         Route::get('schedule-pins/info', [SchedulePinController::class, 'scheduleInfo'])->name('schedule-pins.info');
+
+        // Settings
+        Route::get('settings/grade-upload', [SettingController::class, 'gradeUploadSettings'])->name('settings.grade-upload');
+        Route::put('settings/grade-upload', [SettingController::class, 'updateGradeUploadSettings'])->name('settings.grade-upload.update');
     });
 
     // Teacher routes (require auth)

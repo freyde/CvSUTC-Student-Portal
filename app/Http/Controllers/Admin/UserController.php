@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Program;
 use App\Models\Department;
+use App\Mail\StudentPasswordMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -166,14 +169,81 @@ class UserController extends Controller
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
+        // Check if this is a student and first-time password generation
+        $isFirstTimeGeneration = !$user->password;
+        $isStudent = $user->role === 'student';
+
+        // If student and first-time generation, require email
+        $studentEmail = null;
+        if ($isStudent && $isFirstTimeGeneration) {
+            $request->validate([
+                'student_email' => ['required', 'email', 'max:255'],
+            ]);
+
+            $studentEmail = $request->student_email;
+            
+            // Update user email if provided and different
+            if ($user->email !== $studentEmail) {
+                $user->update(['email' => $studentEmail]);
+            }
+        }
+
         $newPassword = $this->generateSecurePassword(8);
         $user->update(['password' => Hash::make($newPassword)]);
+
+        // Refresh user model to get updated email
+        $user->refresh();
+
+        // Send email to student if it's first-time generation
+        if ($isStudent && $isFirstTimeGeneration) {
+            $emailToSend = $studentEmail ?? $user->email;
+            
+            if (!$emailToSend) {
+                $statusMessage = "Generated a new temporary password for {$user->name}. Warning: No email address provided. Please provide the password manually.";
+            } else {
+                try {
+                    Log::info('Attempting to send password email', [
+                        'user_id' => $user->id,
+                        'email' => $emailToSend,
+                        'mail_driver' => config('mail.default'),
+                    ]);
+                    
+                    Mail::to($emailToSend)->send(new StudentPasswordMail($user->name, $newPassword));
+                    
+                    // Check if mail was actually sent (for log driver, it will be logged)
+                    $mailDriver = config('mail.default');
+                    if ($mailDriver === 'log') {
+                        $statusMessage = "Generated a new temporary password for {$user->name}. Email logged to storage/logs/laravel.log (mail driver is set to 'log' - configure SMTP in .env to send actual emails).";
+                    } else {
+                        $statusMessage = "Generated a new temporary password for {$user->name} and sent it to {$emailToSend}.";
+                    }
+                    
+                    Log::info('Password email sent successfully', [
+                        'user_id' => $user->id,
+                        'email' => $emailToSend,
+                    ]);
+                } catch (\Exception $e) {
+                    // Log the error for debugging
+                    Log::error('Failed to send password email', [
+                        'user_id' => $user->id,
+                        'email' => $emailToSend,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    
+                    // If email fails, still show the password but warn admin
+                    $statusMessage = "Generated a new temporary password for {$user->name}. Warning: Email could not be sent to {$emailToSend}. Error: " . $e->getMessage() . ". Please check logs and provide the password manually.";
+                }
+            }
+        } else {
+            $statusMessage = "Generated a new temporary password for {$user->name}.";
+        }
 
         return back()->with('generated_password', [
             'user_id' => $user->id,
             'user' => $user->name,
             'value' => $newPassword,
-        ])->with('status', "Generated a new temporary password for {$user->name}.");
+        ])->with('status', $statusMessage);
     }
 
     public function viewPassword(Request $request, User $user)

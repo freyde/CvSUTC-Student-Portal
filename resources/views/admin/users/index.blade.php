@@ -112,10 +112,14 @@
                     <td class="px-4 py-2 text-sm text-left space-x-2 font-medium">
                         <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
                         @if(!$user->password)
-                        <form method="POST" action="{{ route('admin.users.generate-password', $user) }}" class="inline">
-                            @csrf
-                            <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3">Generate</button>
-                        </form>
+                            @if($user->role === 'student')
+                                <button type="button" class="text-blue-600 hover:text-blue-900 mr-3" onclick="openGeneratePasswordModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email ?? '' }}')">Generate</button>
+                            @else
+                                <form method="POST" action="{{ route('admin.users.generate-password', $user) }}" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-blue-600 hover:text-blue-900 mr-3">Generate</button>
+                                </form>
+                            @endif
                         @endif
                         @if($user->id !== auth()->id())
                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline" onsubmit="return confirm('Delete this user? This action cannot be undone.');">
@@ -166,10 +170,50 @@ Ana Student,,student,2023-00001,BSCS</pre>
         </form>
     </x-modal>
 
+    <!-- Generate Password Modal for Students (First-time generation) -->
+    @foreach($users as $user)
+        @if(!$user->password && $user->role === 'student')
+        <div id="generate-password-modal-{{ $user->id }}" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-40 {{ old('_token') && request()->route('user') == $user->id ? '' : '' }}">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Generate Password for Student</h3>
+                    <button type="button" class="text-gray-500 hover:text-gray-800" onclick="closeGeneratePasswordModal({{ $user->id }})">×</button>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">
+                    Please enter the student's email address. The temporary password will be sent to this email.
+                </p>
+                <form method="POST" action="{{ route('admin.users.generate-password', $user) }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="student_email_{{ $user->id }}">Student Email Address</label>
+                        <input 
+                            type="email" 
+                            id="student_email_{{ $user->id }}" 
+                            name="student_email" 
+                            value="{{ old('student_email', $user->email ?? '') }}"
+                            required 
+                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('student_email') border-red-500 @enderror"
+                            placeholder="student@example.com"
+                        >
+                        @error('student_email')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <br>
+                    <div class="flex justify-end gap-2">
+                        <button type="submit" class="px-3 py-1.5 rounded bg-gray-900 text-white hover:bg-black text-sm whitespace-nowrap">Generate & Send</button>
+                        <button type="button" class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50" onclick="closeGeneratePasswordModal({{ $user->id }})">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        @endif
+    @endforeach
+
     <!-- Password Modals (View existing users with password) -->
     @foreach($users as $user)
         @if($user->password)
-        <div id="password-modal-{{ $user->id }}" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40">
+        <div id="password-modal-{{ $user->id }}" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-40">
             <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">View Password</h3>
@@ -215,17 +259,60 @@ Ana Student,,student,2023-00001,BSCS</pre>
         // Auto-open the modal for the user whose password was just generated/viewed
         document.addEventListener('DOMContentLoaded', function () {
             const userId = {{ session('generated_password.user_id') }};
-            openPasswordModal(userId);
+            const modal = document.getElementById(`password-modal-${userId}`);
+            if (modal) {
+                openPasswordModal(userId);
+            }
+        });
+    @endif
+
+    // Auto-open generate password modal if there are validation errors for student_email
+    @if($errors->has('student_email'))
+        document.addEventListener('DOMContentLoaded', function () {
+            // Find the user ID from the URL or session
+            @if(request()->route('user'))
+                const userId = {{ request()->route('user')->id }};
+                openGeneratePasswordModal(userId, '', '{{ old('student_email', '') }}');
+            @endif
         });
     @endif
 
     function openPasswordModal(id) {
         const modal = document.getElementById(`password-modal-${id}`);
-        if (modal) modal.classList.remove('hidden');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
     }
+    
     function closePasswordModal(id) {
         const modal = document.getElementById(`password-modal-${id}`);
-        if (modal) modal.classList.add('hidden');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
+
+    function openGeneratePasswordModal(id, name, currentEmail) {
+        const modal = document.getElementById(`generate-password-modal-${id}`);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Pre-fill email if available
+            const emailInput = document.getElementById(`student_email_${id}`);
+            if (emailInput) {
+                emailInput.value = currentEmail || emailInput.value;
+                emailInput.focus();
+            }
+        }
+    }
+
+    function closeGeneratePasswordModal(id) {
+        const modal = document.getElementById(`generate-password-modal-${id}`);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     }
 </script>
 @endsection

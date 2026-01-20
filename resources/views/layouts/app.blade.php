@@ -11,13 +11,7 @@
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900">
-    <nav class="bg-white border-b" x-data="{ 
-        openUsers: false, 
-        openAcademicYear: false, 
-        openCurriculum: false, 
-        openEnrollments: false, 
-        openPINs: false 
-    }">
+    <nav class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo/Home -->
@@ -26,46 +20,64 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="flex items-center space-x-4 flex-1 justify-center ml-8">
+                <div class="flex items-center space-x-4 flex-1 justify-center ml-8 overflow-x-auto">
                     @auth
                         @if(auth()->user()->isAdmin())
                             <!-- Users Dropdown -->
-                            <div class="relative" @click.away="openUsers = false">
-                                <button @click="openUsers = !openUsers" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" x-ref="usersButton" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
                                     Users
                                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                <div x-show="openUsers" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                <div x-show="open" 
+                                     x-cloak 
+                                     x-ref="usersDropdown"
+                                     @click="open = false"
+                                     x-init="$watch('open', value => { if (value) { const rect = $refs.usersButton.getBoundingClientRect(); $refs.usersDropdown.style.top = (rect.bottom + 4) + 'px'; $refs.usersDropdown.style.left = rect.left + 'px'; } })"
+                                     style="position: fixed; display: none;" 
+                                     class="bg-white rounded-md shadow-lg border border-gray-200 z-50 w-48">
                                     <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Register</a>
                                     <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Users</a>
                                 </div>
                             </div>
 
                             <!-- Academic Year Dropdown -->
-                            <div class="relative" @click.away="openAcademicYear = false">
-                                <button @click="openAcademicYear = !openAcademicYear" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" x-ref="academicYearButton" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
                                     Academic Year
                                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                <div x-show="openAcademicYear" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                <div x-show="open" 
+                                     x-cloak 
+                                     x-ref="academicYearDropdown"
+                                     @click="open = false"
+                                     x-init="$watch('open', value => { if (value) { const rect = $refs.academicYearButton.getBoundingClientRect(); $refs.academicYearDropdown.style.top = (rect.bottom + 4) + 'px'; $refs.academicYearDropdown.style.left = rect.left + 'px'; } })"
+                                     style="position: fixed; display: none;" 
+                                     class="bg-white rounded-md shadow-lg border border-gray-200 z-50 w-48">
                                     <a href="{{ route('admin.academic-years.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Academic Years</a>
                                     <a href="{{ route('admin.semesters.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Semesters</a>
                                 </div>
                             </div>
 
                             <!-- Curriculum Dropdown -->
-                            <div class="relative" @click.away="openCurriculum = false">
-                                <button @click="openCurriculum = !openCurriculum" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" x-ref="curriculumButton" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
                                     Curriculum
                                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                <div x-show="openCurriculum" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                <div x-show="open" 
+                                     x-cloak 
+                                     x-ref="curriculumDropdown"
+                                     @click="open = false"
+                                     x-init="$watch('open', value => { if (value) { const rect = $refs.curriculumButton.getBoundingClientRect(); $refs.curriculumDropdown.style.top = (rect.bottom + 4) + 'px'; $refs.curriculumDropdown.style.left = rect.left + 'px'; } })"
+                                     style="position: fixed; display: none;" 
+                                     class="bg-white rounded-md shadow-lg border border-gray-200 z-50 w-48">
                                     <a href="{{ route('admin.departments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Departments</a>
                                     <a href="{{ route('admin.programs.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Programs</a>
                                     <a href="{{ route('admin.courses.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Courses</a>
@@ -76,33 +88,47 @@
                             <a href="{{ route('admin.schedules.index') }}" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap">Schedules</a>
 
                             <!-- Enrollments Dropdown -->
-                            <div class="relative" @click.away="openEnrollments = false">
-                                <button @click="openEnrollments = !openEnrollments" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" x-ref="enrollmentsButton" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
                                     Enrollments
                                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                <div x-show="openEnrollments" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                <div x-show="open" 
+                                     x-cloak 
+                                     x-ref="enrollmentsDropdown"
+                                     @click="open = false"
+                                     x-init="$watch('open', value => { if (value) { const rect = $refs.enrollmentsButton.getBoundingClientRect(); $refs.enrollmentsDropdown.style.top = (rect.bottom + 4) + 'px'; $refs.enrollmentsDropdown.style.left = rect.left + 'px'; } })"
+                                     style="position: fixed; display: none;" 
+                                     class="bg-white rounded-md shadow-lg border border-gray-200 z-50 w-48">
                                     <a href="{{ route('admin.enrollments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Enrollments</a>
-                                    <a href="{{ route('admin.grades.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Manage Grades</a>
-                                    <a href="{{ route('grades.select-schedule') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Upload Grades</a>
+                                    <a href="{{ route('admin.grades.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Grades</a>
                                 </div>
                             </div>
 
                             <!-- PINs Dropdown -->
-                            <div class="relative" @click.away="openPINs = false">
-                                <button @click="openPINs = !openPINs" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button @click="open = !open" x-ref="pinsButton" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap flex items-center">
                                     PINs
                                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </button>
-                                <div x-show="openPINs" x-cloak class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                                <div x-show="open" 
+                                     x-cloak 
+                                     x-ref="pinsDropdown"
+                                     @click="open = false"
+                                     x-init="$watch('open', value => { if (value) { const rect = $refs.pinsButton.getBoundingClientRect(); $refs.pinsDropdown.style.top = (rect.bottom + 4) + 'px'; $refs.pinsDropdown.style.left = rect.left + 'px'; } })"
+                                     style="position: fixed; display: none;" 
+                                     class="bg-white rounded-md shadow-lg border border-gray-200 z-50 w-48">
                                     <a href="{{ route('admin.schedule-pins.view') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">View PINs</a>
                                     <a href="{{ route('admin.schedule-pins.manage') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Manage PINs</a>
                                 </div>
                             </div>
+
+                            <!-- Settings (standalone) -->
+                            <a href="{{ route('admin.settings.grade-upload') }}" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap">Settings</a>
                         @endif
                         @if(auth()->user()->isDepartmentChair())
                             <a href="{{ route('teacher.chair.dashboard') }}" class="px-3 py-2 text-sm text-gray-700 hover:text-gray-900 whitespace-nowrap">Dashboard</a>

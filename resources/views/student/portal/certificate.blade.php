@@ -334,7 +334,7 @@
                             <td>{{ $course->code ?? 'N/A' }}</td>
                             <td class="text-left">{{ $course->title ?? 'N/A' }}</td>
                             <td style="font-weight: bold;">{{ $gradeValue ?? 'N/A' }}</td>
-                            <td>{{ $isCompleted ? '' : '' }}</td>
+                            <td>{{ $isCompleted ? '✓' : '' }}</td>
                             <td>{{ $units }}</td>
                             <td>{{ $creditUnits }}</td>
                         </tr>

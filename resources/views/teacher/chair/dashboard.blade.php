@@ -28,15 +28,6 @@
             </a>
         </div>
 
-        <!-- My Courses Card -->
-        <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 p-6">
-            <h2 class="text-lg font-semibold mb-2">My Courses</h2>
-            <p class="text-gray-600 text-sm mb-4">View courses you are teaching.</p>
-            <a href="{{ route('teacher.courses.index') }}" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500">
-                View Courses
-            </a>
-        </div>
-
         <!-- Teacher Grades Card -->
         <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 p-6">
             <h2 class="text-lg font-semibold mb-2">Teacher Grades</h2>
