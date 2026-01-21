@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Program;
 use App\Models\Department;
 use App\Mail\StudentPasswordMail;
+use App\Services\SendGridMailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -202,29 +203,32 @@ class UserController extends Controller
                 $statusMessage = "Generated a new temporary password for {$user->name}. Warning: No email address provided. Please provide the password manually.";
             } else {
                 try {
-                    Log::info('Attempting to send password email', [
+                    Log::info('Attempting to send password email via SendGrid', [
                         'user_id' => $user->id,
                         'email' => $emailToSend,
-                        'mail_driver' => config('mail.default'),
                     ]);
                     
-                    Mail::to($emailToSend)->send(new StudentPasswordMail($user->name, $newPassword));
+                    // Use SendGrid service instead of Laravel Mail facade
+                    $sendGridService = app(SendGridMailService::class);
+                    $sendGridService->sendView(
+                        $emailToSend,
+                        'Your Student Portal Temporary Password',
+                        'emails.student-password',
+                        [
+                            'studentName' => $user->name,
+                            'temporaryPassword' => $newPassword,
+                        ]
+                    );
                     
-                    // Check if mail was actually sent (for log driver, it will be logged)
-                    $mailDriver = config('mail.default');
-                    if ($mailDriver === 'log') {
-                        $statusMessage = "Generated a new temporary password for {$user->name}. Email logged to storage/logs/laravel.log (mail driver is set to 'log' - configure SMTP in .env to send actual emails).";
-                    } else {
-                        $statusMessage = "Generated a new temporary password for {$user->name} and sent it to {$emailToSend}.";
-                    }
+                    $statusMessage = "Generated a new temporary password for {$user->name} and sent it to {$emailToSend} via SendGrid.";
                     
-                    Log::info('Password email sent successfully', [
+                    Log::info('Password email sent successfully via SendGrid', [
                         'user_id' => $user->id,
                         'email' => $emailToSend,
                     ]);
                 } catch (\Exception $e) {
                     // Log the error for debugging
-                    Log::error('Failed to send password email', [
+                    Log::error('Failed to send password email via SendGrid', [
                         'user_id' => $user->id,
                         'email' => $emailToSend,
                         'error' => $e->getMessage(),
