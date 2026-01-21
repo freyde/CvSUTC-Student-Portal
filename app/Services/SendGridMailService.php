@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
@@ -94,6 +95,27 @@ class SendGridMailService
     {
         $htmlContent = View::make($view, $data)->render();
         return $this->send($to, $subject, $htmlContent);
+=======
+use SendGrid;
+use SendGrid\Mail\Mail;
+
+class SendGridMailService
+{
+    public function send($to, $subject, $content)
+    {
+        $email = new Mail();
+        $email->setFrom(
+            config('mail.from.address'),
+            config('mail.from.name')
+        );
+        $email->setSubject($subject);
+        $email->addTo($to);
+        $email->addContent('text/plain', $content);
+
+        $sendgrid = new SendGrid(env('SENDGRID_API_KEY'));
+
+        return $sendgrid->send($email);
+>>>>>>> 062e7d695d72fa4af7e7681d5ca27f484c0649ce
     }
 }
 

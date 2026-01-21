@@ -25,10 +25,17 @@ class UserFactory extends Factory
     {
         return [
 <<<<<<< HEAD
+<<<<<<< HEAD
             'name' =>$this->faker->name(),
 =======
             'name' => $this->faker->name(),
 >>>>>>> 0a80f035c2a419edece9d6cfde0f2fa7041ce2f9
+=======
+            'name' => $this->faker->name(),
+=======
+            'name' =>$this->faker->name(),
+>>>>>>> e7a3274 (update)
+>>>>>>> 062e7d695d72fa4af7e7681d5ca27f484c0649ce
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
