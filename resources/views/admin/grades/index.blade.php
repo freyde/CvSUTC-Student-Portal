@@ -96,8 +96,8 @@
                                             <span class="font-medium">{{ $grade->item }}:</span>
                                             $display = match (true) {
                                                 $grade->score === null => 'N/A',
-                                                (float) $grade->score === 6.00 => 'DRP',
-                                                (float) $grade->score === 7.00 => 'INC',
+                                                (float) $grade->score === 6.00 => 'INC',
+                                                (float) $grade->score === 7.00 => 'DRP',
                                                 default => number_format($grade->score, 2),
                                             };
                                             <span>{{ $display }}</span>
