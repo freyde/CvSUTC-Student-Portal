@@ -86,8 +86,8 @@
                                         <option value="2.75" {{ $currentGrade == '2.75' ? 'selected' : '' }}>2.75</option>
                                         <option value="3.00" {{ $currentGrade == '3.00' ? 'selected' : '' }}>3.00</option>
                                         <option value="4.00" {{ $currentGrade == '4.00' ? 'selected' : '' }}>4.00</option>
-                                        <option value="INC" {{ $currentGrade == '6.00' ? 'selected' : '' }}>INC</option>
-                                        <option value="DRP" {{ $currentGrade == '7.00' ? 'selected' : '' }}>DRP</option>
+                                        <option value="6.00" {{ $currentGrade == '6.00' ? 'selected' : '' }}>INC</option>
+                                        <option value="7.00" {{ $currentGrade == '7.00' ? 'selected' : '' }}>DRP</option>
                                         <option value="5.00" {{ $currentGrade == '5.00' ? 'selected' : '' }}>5.00</option>
                                     </select>
                                 </td>
