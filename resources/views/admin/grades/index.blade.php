@@ -94,7 +94,13 @@
                                     @foreach($enrollment->grades as $grade)
                                         <div class="flex items-center gap-2">
                                             <span class="font-medium">{{ $grade->item }}:</span>
-                                            <span>{{ $grade->score ?? 'N/A' }}</span>
+                                            $display = match (true) {
+                                                $grade->score === null => 'N/A',
+                                                (float) $grade->score === 6.00 => 'DRP',
+                                                (float) $grade->score === 7.00 => 'INC',
+                                                default => number_format($grade->score, 2),
+                                            };
+                                            <span>{{ $display }}</span>
                                         </div>
                                     @endforeach
                                     @if($enrollment->grades->isEmpty())
