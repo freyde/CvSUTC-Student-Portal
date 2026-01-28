@@ -113,6 +113,10 @@ class GradeController extends Controller
         return back()->with('status', 'Grade saved.');
     }
 
+    public function viewSchedule (Request $request, Schedule $schedule) {
+        return view('teacher.grades.select-schedule');
+    }
+
     /**
      * Save all grades and finalize the schedule using the schedule's unique PIN.
      */
@@ -125,7 +129,7 @@ class GradeController extends Controller
 
         $validGrades = [
             '1.00', '1.25', '1.50', '1.75', '2.00', '2.25', '2.50', '2.75', 
-            '3.00', '4.00', 'INC', 'DRP', '5.00'
+            '3.00', '4.00', '6.00', '7.00', '5.00'
         ];
 
         $data = $request->validate([
@@ -171,8 +175,8 @@ class GradeController extends Controller
             'finalized_by' => Auth::id(),
         ]);
 
-        return view('teacher.grades.select-schedule')
-            ->with('status', 'All grades saved and finalized with department approval.');
+        return view('teacher.grades.select-schedule');
+            // ->with('status', 'All grades saved and finalized with department approval.');
     }
 
     /**

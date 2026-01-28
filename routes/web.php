@@ -106,7 +106,8 @@ Route::middleware('auth')->group(function () {
     // Grade entry routes (accessible to admins, teachers, and department chairs)
     Route::prefix('grades')->name('grades.')->group(function () {
         Route::get('/', [TeacherGradeController::class, 'selectSchedule'])->name('select-schedule');
-        Route::match(['get', 'post'], '/show', [TeacherGradeController::class, 'showSchedule'])->name('show-schedule');
+        Route::post('/show', [TeacherGradeController::class, 'showSchedule'])->name('show-schedule');
+        Route::get('/show', [TeacherGradeController::class, 'viewSchedule'])->name('view-schedule');
         Route::get('/schedule-info', [TeacherGradeController::class, 'scheduleInfo'])->name('schedule-info');
         Route::post('/{schedule}/enrollments/{enrollment}', [TeacherGradeController::class, 'upsert'])->name('upsert');
         Route::post('/{schedule}/finalize', [TeacherGradeController::class, 'finalize'])->name('finalize');
