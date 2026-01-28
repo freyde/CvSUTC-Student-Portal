@@ -140,14 +140,18 @@ class GradeController extends Controller
 
         // PIN must match the schedule's unique approval_pin
         if (! $schedule->approval_pin) {
-            return back()->withErrors([
-                'approval_pin' => 'This schedule does not have a PIN assigned. Please contact an administrator.',
+            return redirect()
+                ->route('show-schedule')
+                ->withErrors([
+                    'approval_pin' => 'Invalid PIN for this schedule.',
             ])->withInput();
         }
 
         if ($schedule->approval_pin !== $data['approval_pin']) {
-            return back()->withErrors([
-                'approval_pin' => 'Invalid PIN for this schedule. Please contact your department chair.',
+            return redirect()
+                ->route('show-schedule')
+                ->withErrors([
+                    'approval_pin' => 'Invalid PIN for this schedule.',
             ])->withInput();
         }
 
