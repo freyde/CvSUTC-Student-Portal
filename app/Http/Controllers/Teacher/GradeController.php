@@ -171,7 +171,7 @@ class GradeController extends Controller
             'finalized_by' => Auth::id(),
         ]);
 
-        return redirect()->back()
+        return back()
             ->with('status', 'All grades saved and finalized with department approval.');
     }
 
