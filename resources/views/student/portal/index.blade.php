@@ -61,7 +61,15 @@
                                         {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                                        {{ $finalGrade->score ?? '--' }}
+                                        @php
+                                            $display = match (true) {
+                                                $finalgrade->score === null => 'N/A',
+                                                (float) $finalgrade->score === 6.00 => 'INC',
+                                                (float) $finalgrade->score === 7.00 => 'DRP',
+                                                default => number_format($finalgrade->score, 2),
+                                            };
+                                        @endphp
+                                        {{ $display }}
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
                                         {{ $finalGrade->score ?? $totalUnits , '0' }}
