@@ -44,6 +44,9 @@ class ChairScheduleController extends Controller
         if ($search !== '') {
             $schedules = Schedule::query()
                 ->where('schedule_code', 'like', "%{$search}%")
+                ->orWhereHas('instructor', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
                 // ->where(function ($q) use ($department) {
                 //     $q->whereHas('instructor', function ($query) use ($department) {
                 //         $query->where('department_id', $department->id);
