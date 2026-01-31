@@ -26,6 +26,10 @@
         </div>
     </div>
 
+    @if (session('status'))
+        <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800">{{ session('status') }}</div>
+    @endif
+
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('admin.grades.index') }}" class="space-y-4">
@@ -93,16 +97,27 @@
                                 <div class="space-y-2">
                                     @foreach($enrollment->grades as $grade)
                                         <div class="flex items-center gap-2">
-                                            <span class="font-medium">{{ $grade->item }}:</span>
-                                            @php
-                                                $display = match (true) {
-                                                    $grade->score === null => 'N/A',
-                                                    (float) $grade->score === 6.00 => 'INC',
-                                                    (float) $grade->score === 7.00 => 'DRP',
-                                                    default => number_format($grade->score, 2),
-                                                };
-                                            @endphp
-                                            <span>{{ $display }}</span>
+                                            <span class="font-medium w-16">{{ $grade->item }}:</span>
+                                            <form method="POST" action="{{ route('admin.grades.update-grade', $enrollment) }}" class="inline" onchange="this.submit()">
+                                                @csrf
+                                                <input type="hidden" name="item" value="{{ $grade->item }}">
+                                                <select name="score" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1">
+                                                    <option value="" {{ $grade->score === null ? 'selected' : '' }}>----</option>
+                                                    <option value="1.00" {{ (string) $grade->score === '1.00' ? 'selected' : '' }}>1.00</option>
+                                                    <option value="1.25" {{ (string) $grade->score === '1.25' ? 'selected' : '' }}>1.25</option>
+                                                    <option value="1.50" {{ (string) $grade->score === '1.50' ? 'selected' : '' }}>1.50</option>
+                                                    <option value="1.75" {{ (string) $grade->score === '1.75' ? 'selected' : '' }}>1.75</option>
+                                                    <option value="2.00" {{ (string) $grade->score === '2.00' ? 'selected' : '' }}>2.00</option>
+                                                    <option value="2.25" {{ (string) $grade->score === '2.25' ? 'selected' : '' }}>2.25</option>
+                                                    <option value="2.50" {{ (string) $grade->score === '2.50' ? 'selected' : '' }}>2.50</option>
+                                                    <option value="2.75" {{ (string) $grade->score === '2.75' ? 'selected' : '' }}>2.75</option>
+                                                    <option value="3.00" {{ (string) $grade->score === '3.00' ? 'selected' : '' }}>3.00</option>
+                                                    <option value="4.00" {{ (string) $grade->score === '4.00' ? 'selected' : '' }}>4.00</option>
+                                                    <option value="6.00" {{ (string) $grade->score === '6.00' ? 'selected' : '' }}>INC</option>
+                                                    <option value="7.00" {{ (string) $grade->score === '7.00' ? 'selected' : '' }}>DRP</option>
+                                                    <option value="5.00" {{ (string) $grade->score === '5.00' ? 'selected' : '' }}>5.00</option>
+                                                </select>
+                                            </form>
                                         </div>
                                     @endforeach
                                     @if($enrollment->grades->isEmpty())
