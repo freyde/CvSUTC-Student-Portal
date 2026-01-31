@@ -61,18 +61,23 @@
                                         {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                                        @php
-                                            $display = match (true) {
-                                                $finalgrade->score === null => 'N/A',
-                                                (float) $finalgrade->score === 6.00 => 'INC',
-                                                (float) $finalgrade->score === 7.00 => 'DRP',
-                                                default => number_format($finalgrade->score, 2),
-                                            };
-                                        @endphp
-                                        {{ $display }}
+                                        @if($finalGrade?->score === null)
+                                            --
+                                        @elseif($finalGrade->score == 6.00)
+                                            INC
+                                        @elseif($finalGrade->score == 7.00)
+                                            DRP
+                                        @else
+                                            {{ number_format($finalGrade->score, 2) }}
+                                        @endif
+
                                     </td>
                                     <td class="px-4 sm:px-6 py-3 whitespace-nowrap text-xs sm:text-sm text-gray-500 text-center">
-                                        {{ $finalGrade->score ?? $totalUnits , '0' }}
+                                        @if($finalGrade?->score === null)
+                                            0
+                                        @else
+                                            {{ $enrollment->schedule->course->lec_unit }}
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

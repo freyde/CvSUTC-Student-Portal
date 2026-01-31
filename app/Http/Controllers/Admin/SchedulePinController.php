@@ -23,19 +23,49 @@ class SchedulePinController extends Controller
     /**
      * View all schedules with their PINs.
      */
+    // public function viewPins(Request $request)
+    // {
+    //     abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+    //     $query = Schedule::with(['course', 'program', 'academicYear', 'semester', 'instructor']);
+
+    //     // Filter by schedule code if provided
+    //     if ($request->filled('search')) {
+    //         $search = $request->search;
+    //         $query->where('schedule_code', 'like', "%{$search}%");
+    //     }
+
+    //     $schedules = $query->orderBy('schedule_code')->paginate(50);
+
+    //     return view('admin.schedule-pins.view', compact('schedules'));
+    // }
+
     public function viewPins(Request $request)
     {
+
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
 
-        $query = Schedule::with(['course', 'program', 'academicYear', 'semester', 'instructor']);
+        // Only show results when searching a schedule code (requested UX).
+        // Still constrain results to this chair's department, but allow unassigned instructors.
+        $search = trim((string) $request->query('search', ''));
 
-        // Filter by schedule code if provided
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('schedule_code', 'like', "%{$search}%");
+        $schedules = collect();
+        if ($search !== '') {
+            $schedules = Schedule::query()
+                ->where('schedule_code', 'like', "%{$search}%")
+                ->orWhereHas('instructor', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                // ->where(function ($q) use ($department) {
+                //     $q->whereHas('instructor', function ($query) use ($department) {
+                //         $query->where('department_id', $department->id);
+                //     })->orWhereNull('instructor_id');
+                // })
+                ->with(['course', 'program', 'academicYear', 'semester', 'instructor'])
+                ->orderBy('schedule_code')
+                ->paginate(50)
+                ->withQueryString();
         }
-
-        $schedules = $query->orderBy('schedule_code')->paginate(50);
 
         return view('admin.schedule-pins.view', compact('schedules'));
     }
