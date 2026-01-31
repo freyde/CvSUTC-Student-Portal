@@ -26,10 +26,6 @@
         </div>
     </div>
 
-    @if (session('status'))
-        <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800">{{ session('status') }}</div>
-    @endif
-
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('admin.grades.index') }}" class="space-y-4">

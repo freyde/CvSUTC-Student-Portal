@@ -7,10 +7,6 @@
         <p class="text-gray-600 mt-1">Control whether teachers and department chairs can upload grades.</p>
     </div>
 
-    @if (session('status'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('status') }}</div>
-    @endif
-
     <div class="bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg p-6">
         <form method="POST" action="{{ route('admin.settings.grade-upload.update') }}">
             @csrf

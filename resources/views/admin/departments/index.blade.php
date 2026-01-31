@@ -12,10 +12,6 @@
         </a>
     </div>
 
-    @if (session('status'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('status') }}</div>
-    @endif
-
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

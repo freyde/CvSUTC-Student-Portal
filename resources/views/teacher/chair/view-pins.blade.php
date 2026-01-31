@@ -9,10 +9,6 @@
         </a> -->
     </div>
 
-    @if (session('status'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('status') }}</div>
-    @endif
-
     <!-- Search Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('teacher.chair.view-pins') }}" class="flex gap-4">

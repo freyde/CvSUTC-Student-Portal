@@ -11,12 +11,6 @@
             finalize grades for that schedule.
         </p>
 
-        @if (session('status'))
-            <div class="mb-2 p-3 bg-green-100 text-green-800 rounded text-sm">
-                {{ session('status') }}
-            </div>
-        @endif
-
         @if ($errors->any())
             <div class="mb-2 p-3 bg-red-100 text-red-800 rounded text-sm">
                 <ul class="list-disc ml-5 space-y-1">

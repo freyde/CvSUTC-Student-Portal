@@ -7,10 +7,6 @@
         <a href="{{ route('admin.users.index') }}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">← Back to Users</a>
     </div>
 
-    @if (session('status'))
-        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('status') }}</div>
-    @endif
-
     <form method="POST" action="{{ route('admin.users.update', $user) }}" class="bg-white shadow ring-1 ring-black ring-opacity-5 rounded-lg p-6 space-y-6">
         @csrf
         @method('PUT')
