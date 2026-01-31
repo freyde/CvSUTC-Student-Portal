@@ -17,7 +17,7 @@
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form method="GET" action="{{ route('admin.schedule-pins.view') }}" class="flex gap-4">
             <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Search by Schedule Code</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Search by Schedule Code/Instructor Name</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Enter schedule code..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
             <div class="flex items-end">
@@ -86,9 +86,11 @@
     </div>
 
     <!-- Pagination -->
-    <!-- <div class="mt-4">
-        {{ $schedules->links() }}
-    </div> -->
+    @if($schedules instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="mt-3">
+            {{ $schedules->links() }}
+        </div>
+    @endif
 </div>
 @endsection
 
