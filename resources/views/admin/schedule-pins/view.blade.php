@@ -86,9 +86,9 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-4">
+    <!-- <div class="mt-4">
         {{ $schedules->links() }}
-    </div>
+    </div> -->
 </div>
 @endsection
 
