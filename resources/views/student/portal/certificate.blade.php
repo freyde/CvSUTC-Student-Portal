@@ -315,7 +315,7 @@
                             // Determine if completed (not 5.00, INC, DRP)
                             $isCompleted = false;
                             $creditUnits = 0;
-                            if ($gradeValue && !in_array(strtoupper($gradeValue), ['5.00', 'INC', 'DRP'])) {
+                            if ($gradeValue && !in_array(strtoupper($gradeValue), ['5.00', '6.00', '7.00'])) {
                                 $isCompleted = true;
                                 $creditUnits = $units;
                                 $totalPassed++;
@@ -334,7 +334,7 @@
                             <td>{{ $course->code ?? 'N/A' }}</td>
                             <td class="text-left">{{ $course->title ?? 'N/A' }}</td>
                             <td style="font-weight: bold;">{{ $gradeValue ?? 'N/A' }}</td>
-                            <td>{{ $isCompleted ? '✓' : '' }}</td>
+                            <td>{{ $isCompleted ? '' : '' }}</td>
                             <td>{{ $units }}</td>
                             <td>{{ $creditUnits }}</td>
                         </tr>
@@ -366,7 +366,7 @@
                     <span class="label">Average:</span>
                     <span class="value">
                         @if($gradeCount > 0)
-                            {{ number_format($gradeSum / $gradeCount, 2) }}
+                            &nbsp&nbsp&nbsp{{ number_format($gradeSum / $gradeCount, 2) }}&nbsp&nbsp&nbsp
                         @else
                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         @endif
