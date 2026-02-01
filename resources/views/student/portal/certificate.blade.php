@@ -321,7 +321,7 @@
                                 $totalPassed++;
                                 
                                 // Calculate numeric grade for average (exclude INC, DRP)
-                                if (is_numeric($gradeValue)) {
+                                if (is_numeric($gradeValue) && $gradeValue != 6.00 && $gradeValue != 7.00) {
                                     $gradeSum += (float)$gradeValue;
                                     $gradeCount++;
                                 }
