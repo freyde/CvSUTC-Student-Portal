@@ -95,7 +95,7 @@ class GradeController extends Controller
                 ->with('status', 'Please select an Academic Year and Semester to export grades.');
         }
 
-        $query = Enrollment::with('user', 'schedule.course', 'schedule.instructor')
+        $query = Enrollment::with('user', 'schedule.course', 'schedule.instructor', 'grades')
             ->whereHas('schedule', function ($q) use ($request) {
                 $q->where('academic_year_id', $request->academic_year_id)
                     ->where('semester_id', $request->semester_id);
@@ -110,21 +110,41 @@ class GradeController extends Controller
 
         $enrollments = $query->orderBy('schedule_id')->orderBy('user_id')->get();
 
+        // Collect grade item columns (Prelim, Midterm, Final first, then any others)
+        $gradeItemOrder = ['Prelim', 'Midterm', 'Final'];
+        $allItems = collect($enrollments->pluck('grades')->flatten()->pluck('item')->unique()->filter())->toArray();
+        $gradeColumns = array_values(array_unique(array_merge($gradeItemOrder, array_diff($allItems, $gradeItemOrder))));
+
         $filename = 'grades-export-' . now()->format('Y-m-d-His') . '.csv';
 
-        return response()->streamDownload(function () use ($enrollments) {
+        return response()->streamDownload(function () use ($enrollments, $gradeColumns) {
             $handle = fopen('php://output', 'w');
 
             // Header row
-            fputcsv($handle, ['Schedule Code', 'Course Code', 'Student Number', 'Instructor']);
+            $header = array_merge(['Schedule Code', 'Course Code', 'Student Number', 'Instructor'], $gradeColumns);
+            fputcsv($handle, $header);
 
             foreach ($enrollments as $enrollment) {
+                $gradesByItem = $enrollment->grades->keyBy('item');
+
                 $scheduleCode = $enrollment->schedule ? $enrollment->schedule->schedule_code : 'N/A';
                 $courseCode = $enrollment->schedule?->course?->code ?? $enrollment->course?->code ?? 'N/A';
                 $studentNumber = $enrollment->user?->student_number ?? 'N/A';
                 $instructor = $enrollment->schedule?->instructor?->name ?? 'N/A';
 
-                fputcsv($handle, [$scheduleCode, $courseCode, $studentNumber, $instructor]);
+                $gradeValues = array_map(function ($item) use ($gradesByItem) {
+                    $grade = $gradesByItem->get($item);
+                    if (!$grade || $grade->score === null) {
+                        return '';
+                    }
+                    return match (true) {
+                        (float) $grade->score === 6.00 => 'INC',
+                        (float) $grade->score === 7.00 => 'DRP',
+                        default => number_format($grade->score, 2),
+                    };
+                }, $gradeColumns);
+
+                fputcsv($handle, array_merge([$scheduleCode, $courseCode, $studentNumber, $instructor], $gradeValues));
             }
 
             fclose($handle);
