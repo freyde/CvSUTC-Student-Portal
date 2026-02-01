@@ -84,7 +84,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Schedule Code</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grades</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -95,36 +95,27 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->schedule->course->code ?? $enrollment->course->code }} - {{ $enrollment->schedule->course->title ?? $enrollment->course->title }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $enrollment->schedule ? $enrollment->schedule->schedule_code : 'N/A' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">
-                                <div class="space-y-2">
-                                    @foreach($enrollment->grades as $grade)
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-medium w-16">{{ $grade->item }}:</span>
-                                            <form method="POST" action="{{ route('admin.grades.update-grade', $enrollment) }}" class="inline" onchange="this.submit()">
-                                                @csrf
-                                                <input type="hidden" name="item" value="{{ $grade->item }}">
-                                                <select name="score" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1">
-                                                    <option value="" {{ $grade->score === null ? 'selected' : '' }}>----</option>
-                                                    <option value="1.00" {{ (string) $grade->score === '1.00' ? 'selected' : '' }}>1.00</option>
-                                                    <option value="1.25" {{ (string) $grade->score === '1.25' ? 'selected' : '' }}>1.25</option>
-                                                    <option value="1.50" {{ (string) $grade->score === '1.50' ? 'selected' : '' }}>1.50</option>
-                                                    <option value="1.75" {{ (string) $grade->score === '1.75' ? 'selected' : '' }}>1.75</option>
-                                                    <option value="2.00" {{ (string) $grade->score === '2.00' ? 'selected' : '' }}>2.00</option>
-                                                    <option value="2.25" {{ (string) $grade->score === '2.25' ? 'selected' : '' }}>2.25</option>
-                                                    <option value="2.50" {{ (string) $grade->score === '2.50' ? 'selected' : '' }}>2.50</option>
-                                                    <option value="2.75" {{ (string) $grade->score === '2.75' ? 'selected' : '' }}>2.75</option>
-                                                    <option value="3.00" {{ (string) $grade->score === '3.00' ? 'selected' : '' }}>3.00</option>
-                                                    <option value="4.00" {{ (string) $grade->score === '4.00' ? 'selected' : '' }}>4.00</option>
-                                                    <option value="6.00" {{ (string) $grade->score === '6.00' ? 'selected' : '' }}>INC</option>
-                                                    <option value="7.00" {{ (string) $grade->score === '7.00' ? 'selected' : '' }}>DRP</option>
-                                                    <option value="5.00" {{ (string) $grade->score === '5.00' ? 'selected' : '' }}>5.00</option>
-                                                </select>
-                                            </form>
-                                        </div>
-                                    @endforeach
-                                    @if($enrollment->grades->isEmpty())
-                                        <span class="text-gray-400">No grades</span>
-                                    @endif
-                                </div>
+                                @php $finalGrade = $enrollment->grades->firstWhere('item', 'Final'); @endphp
+                                <form method="POST" action="{{ route('admin.grades.update-grade', $enrollment) }}" class="inline" onchange="this.submit()">
+                                    @csrf
+                                    <input type="hidden" name="item" value="Final">
+                                    <select name="score" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm py-1">
+                                        <option value="" {{ $finalGrade?->score === null ? 'selected' : '' }}>----</option>
+                                        <option value="1.00" {{ (string) ($finalGrade?->score ?? '') === '1.00' ? 'selected' : '' }}>1.00</option>
+                                        <option value="1.25" {{ (string) ($finalGrade?->score ?? '') === '1.25' ? 'selected' : '' }}>1.25</option>
+                                        <option value="1.50" {{ (string) ($finalGrade?->score ?? '') === '1.50' ? 'selected' : '' }}>1.50</option>
+                                        <option value="1.75" {{ (string) ($finalGrade?->score ?? '') === '1.75' ? 'selected' : '' }}>1.75</option>
+                                        <option value="2.00" {{ (string) ($finalGrade?->score ?? '') === '2.00' ? 'selected' : '' }}>2.00</option>
+                                        <option value="2.25" {{ (string) ($finalGrade?->score ?? '') === '2.25' ? 'selected' : '' }}>2.25</option>
+                                        <option value="2.50" {{ (string) ($finalGrade?->score ?? '') === '2.50' ? 'selected' : '' }}>2.50</option>
+                                        <option value="2.75" {{ (string) ($finalGrade?->score ?? '') === '2.75' ? 'selected' : '' }}>2.75</option>
+                                        <option value="3.00" {{ (string) ($finalGrade?->score ?? '') === '3.00' ? 'selected' : '' }}>3.00</option>
+                                        <option value="4.00" {{ (string) ($finalGrade?->score ?? '') === '4.00' ? 'selected' : '' }}>4.00</option>
+                                        <option value="6.00" {{ (string) ($finalGrade?->score ?? '') === '6.00' ? 'selected' : '' }}>INC</option>
+                                        <option value="7.00" {{ (string) ($finalGrade?->score ?? '') === '7.00' ? 'selected' : '' }}>DRP</option>
+                                        <option value="5.00" {{ (string) ($finalGrade?->score ?? '') === '5.00' ? 'selected' : '' }}>5.00</option>
+                                    </select>
+                                </form>
                             </td>
                         </tr>
                     @empty

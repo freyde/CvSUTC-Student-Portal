@@ -110,10 +110,8 @@ class GradeController extends Controller
 
         $enrollments = $query->orderBy('schedule_id')->orderBy('user_id')->get();
 
-        // Collect grade item columns (Prelim, Midterm, Final first, then any others)
-        $gradeItemOrder = ['Prelim', 'Midterm', 'Final'];
-        $allItems = collect($enrollments->pluck('grades')->flatten()->pluck('item')->unique()->filter())->toArray();
-        $gradeColumns = array_values(array_unique(array_merge($gradeItemOrder, array_diff($allItems, $gradeItemOrder))));
+        // Only one grade (Final) per course
+        $gradeColumns = ['Grade'];
 
         $filename = 'grades-export-' . now()->format('Y-m-d-His') . '.csv';
 
@@ -132,19 +130,17 @@ class GradeController extends Controller
                 $studentNumber = $enrollment->user?->student_number ?? 'N/A';
                 $instructor = $enrollment->schedule?->instructor?->name ?? 'N/A';
 
-                $gradeValues = array_map(function ($item) use ($gradesByItem) {
-                    $grade = $gradesByItem->get($item);
-                    if (!$grade || $grade->score === null) {
-                        return '';
-                    }
-                    return match (true) {
+                $grade = $gradesByItem->get('Final');
+                $gradeValue = '';
+                if ($grade && $grade->score !== null) {
+                    $gradeValue = match (true) {
                         (float) $grade->score === 6.00 => 'INC',
                         (float) $grade->score === 7.00 => 'DRP',
                         default => number_format($grade->score, 2),
                     };
-                }, $gradeColumns);
+                }
 
-                fputcsv($handle, array_merge([$scheduleCode, $courseCode, $studentNumber, $instructor], $gradeValues));
+                fputcsv($handle, [$scheduleCode, $courseCode, $studentNumber, $instructor, $gradeValue]);
             }
 
             fclose($handle);
