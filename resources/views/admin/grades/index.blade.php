@@ -4,6 +4,11 @@
 <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">Manage Grades</h1>
+        @if(request('academic_year_id') && request('semester_id'))
+            <a href="{{ route('admin.grades.export', request()->query()) }}" class="px-4 py-2 rounded bg-gray-900 text-white hover:bg-black text-sm">
+                Export CSV
+            </a>
+        @endif
     </div>
 
     <!-- Valid Grades Reference -->

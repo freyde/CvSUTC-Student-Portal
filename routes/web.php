@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         Route::post('schedules/generate-all-pins', [ScheduleController::class, 'generateAllPins'])->name('schedules.generate-all-pins');
         
         Route::get('grades', [GradeController::class, 'index'])->name('grades.index');
+        Route::get('grades/export', [GradeController::class, 'export'])->name('grades.export');
         Route::post('grades/{enrollment}/update-grade', [GradeController::class, 'updateGrade'])->name('grades.update-grade');
         Route::delete('grades/{grade}/delete-grade', [GradeController::class, 'deleteGrade'])->name('grades.delete-grade');
         

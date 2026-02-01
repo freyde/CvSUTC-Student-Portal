@@ -9,7 +9,7 @@ use App\Models\Grade;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GradeController extends Controller
 {
@@ -84,6 +84,54 @@ class GradeController extends Controller
         $grade->delete();
 
         return back()->with('status', 'Grade deleted successfully.');
+    }
+
+    public function export(Request $request): StreamedResponse|\Illuminate\Http\RedirectResponse
+    {
+        abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
+
+        if (!$request->filled('academic_year_id') || !$request->filled('semester_id')) {
+            return redirect()->route('admin.grades.index')
+                ->with('status', 'Please select an Academic Year and Semester to export grades.');
+        }
+
+        $query = Enrollment::with('user', 'schedule.course', 'schedule.instructor')
+            ->whereHas('schedule', function ($q) use ($request) {
+                $q->where('academic_year_id', $request->academic_year_id)
+                    ->where('semester_id', $request->semester_id);
+            });
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('student_number', 'like', "%{$search}%");
+            });
+        }
+
+        $enrollments = $query->orderBy('schedule_id')->orderBy('user_id')->get();
+
+        $filename = 'grades-export-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($enrollments) {
+            $handle = fopen('php://output', 'w');
+
+            // Header row
+            fputcsv($handle, ['Schedule Code', 'Course Code', 'Student Number', 'Instructor']);
+
+            foreach ($enrollments as $enrollment) {
+                $scheduleCode = $enrollment->schedule ? $enrollment->schedule->schedule_code : 'N/A';
+                $courseCode = $enrollment->schedule?->course?->code ?? $enrollment->course?->code ?? 'N/A';
+                $studentNumber = $enrollment->user?->student_number ?? 'N/A';
+                $instructor = $enrollment->schedule?->instructor?->name ?? 'N/A';
+
+                fputcsv($handle, [$scheduleCode, $courseCode, $studentNumber, $instructor]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ]);
     }
 }
 
