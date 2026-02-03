@@ -333,7 +333,18 @@
                         <tr>
                             <td>{{ $course->code ?? 'N/A' }}</td>
                             <td class="text-left">{{ $course->title ?? 'N/A' }}</td>
-                            <td style="font-weight: bold;">{{ $gradeValue ?? 'N/A' }}</td>
+                            <td style="font-weight: bold;">
+                                {{ $gradeValue ?? 'N/A' }}
+                                 @if($gradeValue === null)
+                                    --
+                                @elseif($gradeValue == 6.00)
+                                    INC
+                                @elseif($gradeValue == 7.00)
+                                    DRP
+                                @else
+                                    {{ number_format($gradeValue, 2) }}
+                                @endif
+                            </td>
                             <td>{{ $isCompleted ? '' : '' }}</td>
                             <td>{{ $units }}</td>
                             <td>{{ $creditUnits }}</td>
