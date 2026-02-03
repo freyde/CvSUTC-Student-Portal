@@ -300,6 +300,7 @@
                         $totalPassed = 0;
                         $gradeSum = 0;
                         $gradeCount = 0;
+                        $gradeUnitSum = 0;
                     @endphp
                     @foreach($groupedEnrollments->first() as $enrollment)
                         @php
@@ -322,7 +323,8 @@
                                 
                                 // Calculate numeric grade for average (exclude INC, DRP)
                                 if (is_numeric($gradeValue) && $gradeValue != 6.00 && $gradeValue != 7.00) {
-                                    $gradeSum += (float)$gradeValue;
+                                    $gradeSum += (float)$gradeValue * $units;
+                                    $gradeUnitSum += $units;
                                     $gradeCount++;
                                 }
                             }
@@ -376,7 +378,7 @@
                     <span class="label">Average:</span>
                     <span class="value">
                         @if($gradeCount > 0)
-                            &nbsp&nbsp&nbsp{{ number_format($gradeSum / $gradeCount, 2) }}&nbsp&nbsp&nbsp
+                            &nbsp&nbsp&nbsp{{ number_format($gradeSum / $gradeUnitSum, 2) }}&nbsp&nbsp&nbsp
                         @else
                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         @endif
