@@ -334,7 +334,6 @@
                             <td>{{ $course->code ?? 'N/A' }}</td>
                             <td class="text-left">{{ $course->title ?? 'N/A' }}</td>
                             <td style="font-weight: bold;">
-                                {{ $gradeValue ?? 'N/A' }}
                                  @if($gradeValue === null)
                                     --
                                 @elseif($gradeValue == 6.00)
