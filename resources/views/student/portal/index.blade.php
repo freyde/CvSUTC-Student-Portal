@@ -10,6 +10,9 @@
                     Print Certificate of Grade
                 </a>
             @endif
+            <a href="{{ route('student.portal.schedule') }}" class="px-4 py-2 text-sm sm:text-base rounded bg-gray-900 text-white hover:bg-black">
+                My Class Schedule
+            </a>
             <a href="{{ route('student.profile.edit') }}" class="px-4 py-2 text-sm sm:text-base rounded bg-gray-900 text-white hover:bg-black">
                 My Profile
             </a>

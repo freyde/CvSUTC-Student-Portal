@@ -75,6 +75,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class Schedule</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -89,6 +90,25 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $schedule->year ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $schedule->section ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $schedule->instructor ? $schedule->instructor->name : 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            @if($schedule->meetings->isEmpty())
+                                <span class="text-gray-400">—</span>
+                            @else
+                                <div class="space-y-1">
+                                    @foreach($schedule->meetings as $meeting)
+                                        <div>
+                                            {{ $meeting->day_of_week }}
+                                            {{ \Illuminate\Support\Str::substr($meeting->start_time, 0, 5) }}
+                                            -
+                                            {{ \Illuminate\Support\Str::substr($meeting->end_time, 0, 5) }}
+                                            @if($meeting->room)
+                                                ({{ $meeting->room }})
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="{{ route('admin.schedules.edit', $schedule) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
                             <form action="{{ route('admin.schedules.destroy', $schedule) }}" method="POST" class="inline">
@@ -117,8 +137,13 @@
         <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h2 class="text-xl font-semibold mb-4">Import Schedules from CSV</h2>
             <p class="text-sm text-gray-600 mb-4">
-                <strong>CSV format:</strong> schedule_code, course_code, program_code (optional, leave empty if none), academic_year, semester_code, year (optional), section (optional), instructor_email (optional)<br>
-                <strong>Example:</strong> SCH001, CS101, BSIT, 2024-2025, 1ST, 1st Year, A, teacher@example.com
+                <strong>CSV format:</strong><br>
+                schedule_code, course_code, program_code (optional, leave empty if none), academic_year, semester_code, year (optional), section (optional), instructor_email (optional),
+                day1 (optional), start_time1 (HH:MM, optional), end_time1 (HH:MM, optional), room1 (optional),
+                day2 (optional), start_time2, end_time2, room2,
+                day3 (optional), start_time3, end_time3, room3<br>
+                <strong>Example (with 2 meetings):</strong><br>
+                SCH001, CS101, BSIT, 2024-2025, 1ST, 1st Year, A, teacher@example.com, Mon, 08:00, 09:30, Room 101, Wed, 08:00, 09:30, Room 101
             </p>
             <form action="{{ route('admin.schedules.import-csv') }}" method="POST" enctype="multipart/form-data">
                 @csrf

@@ -87,6 +87,60 @@
             </div>
         </div>
 
+        <div class="border-t pt-4 mt-4">
+            <h2 class="text-sm font-semibold text-gray-700 mb-3">Class Schedule (up to 3)</h2>
+            <p class="text-xs text-gray-500 mb-3">Specify day, start time, end time, and room for each meeting.</p>
+            @php
+                $existingMeetings = $schedule->meetings->take(3)->values();
+            @endphp
+            <div class="space-y-3">
+                @foreach(range(0,2) as $i)
+                    @php $m = $existingMeetings[$i] ?? null; @endphp
+                    <div class="grid grid-cols-4 gap-3 items-end">
+                        <div>
+                            <x-input-label :for="'meetings_'.$i.'_day'" :value="__('Day')" />
+                            <select id="meetings_{{ $i }}_day" name="meetings[{{ $i }}][day]" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">—</option>
+                                @foreach(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $day)
+                                    <option value="{{ $day }}" {{ old('meetings.'.$i.'.day', $m?->day_of_week) === $day ? 'selected' : '' }}>{{ $day }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <x-input-label :for="'meetings_'.$i.'_start_time'" :value="__('Start Time')" />
+                            <x-text-input
+                                id="meetings_{{ $i }}_start_time"
+                                class="block mt-1 w-full"
+                                type="time"
+                                name="meetings[{{ $i }}][start_time]"
+                                :value="old('meetings.'.$i.'.start_time', $m?->start_time)"
+                            />
+                        </div>
+                        <div>
+                            <x-input-label :for="'meetings_'.$i.'_end_time'" :value="__('End Time')" />
+                            <x-text-input
+                                id="meetings_{{ $i }}_end_time"
+                                class="block mt-1 w-full"
+                                type="time"
+                                name="meetings[{{ $i }}][end_time]"
+                                :value="old('meetings.'.$i.'.end_time', $m?->end_time)"
+                            />
+                        </div>
+                        <div>
+                            <x-input-label :for="'meetings_'.$i.'_room'" :value="__('Room')" />
+                            <x-text-input
+                                id="meetings_{{ $i }}_room"
+                                class="block mt-1 w-full"
+                                type="text"
+                                name="meetings[{{ $i }}][room]"
+                                :value="old('meetings.'.$i.'.room', $m?->room)"
+                            />
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="flex items-center justify-end gap-4">
             <a href="{{ route('admin.schedules.index') }}" class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-50">Cancel</a>
             <x-primary-button>Update Schedule</x-primary-button>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicYear;
+use App\Models\Semester;
 use Illuminate\Support\Facades\Auth;
 
 class PortalController extends Controller
@@ -36,6 +38,53 @@ class PortalController extends Controller
         })->sortKeysDesc(); // Sort by academic year descending
 
         return view('student.portal.index', compact('user', 'groupedEnrollments'));
+    }
+
+    public function schedule()
+    {
+        abort_unless(Auth::check() && Auth::user()->isStudent(), 403);
+
+        $user = Auth::user();
+
+        $activeYear = AcademicYear::where('is_active', true)->orderByDesc('id')->first();
+        $currentSemester = null;
+        $enrollments = collect();
+
+        if ($activeYear) {
+            $enrollmentsQuery = $user->enrollments()
+                ->with([
+                    'schedule.course',
+                    'schedule.academicYear',
+                    'schedule.semester',
+                    'schedule.instructor',
+                    'schedule.meetings',
+                ])
+                ->whereHas('schedule', function ($q) use ($activeYear) {
+                    $q->where('academic_year_id', $activeYear->id);
+                });
+
+            // Determine "active semester" as the semester that has schedules for this year, with highest id
+            $currentSemester = Semester::whereHas('schedules', function ($q) use ($activeYear) {
+                    $q->where('academic_year_id', $activeYear->id);
+                })
+                ->orderByDesc('id')
+                ->first();
+
+            if ($currentSemester) {
+                $enrollments = $enrollmentsQuery
+                    ->whereHas('schedule', function ($q) use ($currentSemester) {
+                        $q->where('semester_id', $currentSemester->id);
+                    })
+                    ->get();
+            }
+        }
+
+        return view('student.schedule.index', [
+            'user' => $user,
+            'activeYear' => $activeYear,
+            'currentSemester' => $currentSemester,
+            'enrollments' => $enrollments,
+        ]);
     }
 
     public function printCertificate()

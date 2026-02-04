@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
+use App\Models\ScheduleMeeting;
 use App\Models\Course;
 use App\Models\Program;
 use App\Models\AcademicYear;
@@ -19,7 +20,7 @@ class ScheduleController extends Controller
     {
         abort_unless(Auth::check() && Auth::user()->isAdmin(), 403);
         
-        $query = Schedule::with('course', 'program', 'academicYear', 'semester', 'instructor');
+        $query = Schedule::with('course', 'program', 'academicYear', 'semester', 'instructor', 'meetings');
 
         // Search filter
         if ($request->filled('search')) {
@@ -91,9 +92,35 @@ class ScheduleController extends Controller
             'year' => ['nullable', 'string', 'max:50'],
             'section' => ['nullable', 'string', 'max:50'],
             'instructor_id' => ['nullable', 'exists:users,id'],
+            'meetings' => ['nullable', 'array', 'max:3'],
+            'meetings.*.day' => ['nullable', 'string', 'max:16'],
+            'meetings.*.start_time' => ['nullable', 'date_format:H:i'],
+            'meetings.*.end_time' => ['nullable', 'date_format:H:i'],
+            'meetings.*.room' => ['nullable', 'string', 'max:64'],
         ]);
 
-        Schedule::create($data);
+        $meetingsInput = $data['meetings'] ?? [];
+        unset($data['meetings']);
+
+        $schedule = Schedule::create($data);
+
+        $meetingsToCreate = [];
+        foreach ($meetingsInput as $meeting) {
+            if (!isset($meeting['day'], $meeting['start_time'], $meeting['end_time']) ||
+                $meeting['day'] === '' || $meeting['start_time'] === '' || $meeting['end_time'] === '') {
+                continue;
+            }
+            $meetingsToCreate[] = [
+                'day_of_week' => $meeting['day'],
+                'start_time' => $meeting['start_time'],
+                'end_time' => $meeting['end_time'],
+                'room' => $meeting['room'] ?? null,
+            ];
+        }
+
+        if (!empty($meetingsToCreate)) {
+            $schedule->meetings()->createMany($meetingsToCreate);
+        }
 
         return redirect()->route('admin.schedules.index')->with('status', 'Schedule created successfully.');
     }
@@ -124,9 +151,37 @@ class ScheduleController extends Controller
             'year' => ['nullable', 'string', 'max:50'],
             'section' => ['nullable', 'string', 'max:50'],
             'instructor_id' => ['nullable', 'exists:users,id'],
+            'meetings' => ['nullable', 'array', 'max:3'],
+            'meetings.*.day' => ['nullable', 'string', 'max:16'],
+            'meetings.*.start_time' => ['nullable', 'date_format:H:i'],
+            'meetings.*.end_time' => ['nullable', 'date_format:H:i'],
+            'meetings.*.room' => ['nullable', 'string', 'max:64'],
         ]);
 
+        $meetingsInput = $data['meetings'] ?? [];
+        unset($data['meetings']);
+
         $schedule->update($data);
+
+        $schedule->meetings()->delete();
+
+        $meetingsToCreate = [];
+        foreach ($meetingsInput as $meeting) {
+            if (!isset($meeting['day'], $meeting['start_time'], $meeting['end_time']) ||
+                $meeting['day'] === '' || $meeting['start_time'] === '' || $meeting['end_time'] === '') {
+                continue;
+            }
+            $meetingsToCreate[] = [
+                'day_of_week' => $meeting['day'],
+                'start_time' => $meeting['start_time'],
+                'end_time' => $meeting['end_time'],
+                'room' => $meeting['room'] ?? null,
+            ];
+        }
+
+        if (!empty($meetingsToCreate)) {
+            $schedule->meetings()->createMany($meetingsToCreate);
+        }
 
         return redirect()->route('admin.schedules.index')->with('status', 'Schedule updated successfully.');
     }
@@ -169,7 +224,12 @@ class ScheduleController extends Controller
             }
         }
         
-        // Expected format: schedule_code, course_code, program_code (optional), academic_year, semester_code, year (optional), section (optional), instructor_email (optional)
+        // Expected format:
+        // schedule_code, course_code, program_code (optional), academic_year, semester_code,
+        // year (optional), section (optional), instructor_email (optional),
+        // day1 (optional), start_time1 (HH:MM, optional), end_time1 (HH:MM, optional), room1 (optional),
+        // day2 (optional), start_time2, end_time2, room2,
+        // day3 (optional), start_time3, end_time3, room3
         $imported = 0;
         $errors = [];
         
@@ -193,7 +253,43 @@ class ScheduleController extends Controller
             $year = isset($row[5]) && trim($row[5]) !== '' ? trim($row[5]) : null;
             $section = isset($row[6]) && trim($row[6]) !== '' ? trim($row[6]) : null;
             $instructorEmail = isset($row[7]) && trim($row[7]) !== '' ? trim($row[7]) : null;
-            
+
+            // Optional meeting blocks start at index 8
+            $meetingsFromCsv = [];
+            $meetingBlocks = [
+                ['day' => 8, 'start' => 9, 'end' => 10, 'room' => 11],
+                ['day' => 12, 'start' => 13, 'end' => 14, 'room' => 15],
+                ['day' => 16, 'start' => 17, 'end' => 18, 'room' => 19],
+            ];
+
+            foreach ($meetingBlocks as $block) {
+                $day = $row[$block['day']] ?? null;
+                $start = $row[$block['start']] ?? null;
+                $end = $row[$block['end']] ?? null;
+                $room = $row[$block['room']] ?? null;
+
+                // Normalize trimming
+                $day = $day !== null ? trim($day) : '';
+                $start = $start !== null ? trim($start) : '';
+                $end = $end !== null ? trim($end) : '';
+                $room = $room !== null ? trim($room) : '';
+
+                if ($day === '' && $start === '' && $end === '' && $room === '') {
+                    continue;
+                }
+
+                if ($day === '' || $start === '' || $end === '') {
+                    $errors[] = "Row " . ($index + 2) . " ({$scheduleCode}): Incomplete class schedule block. Day, start time, and end time are required together.";
+                    continue 2; // skip this row entirely
+                }
+
+                $meetingsFromCsv[] = [
+                    'day_of_week' => $day,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                    'room' => $room !== '' ? $room : null,
+                ];
+            }
             // Look up IDs
             $course = Course::where('code', $courseCode)->first();
             if (!$course) {
@@ -259,7 +355,20 @@ class ScheduleController extends Controller
             }
             
             try {
-                Schedule::create($validator->validated());
+                $schedule = Schedule::create($validator->validated());
+
+                if (!empty($meetingsFromCsv)) {
+                    foreach ($meetingsFromCsv as $m) {
+                        ScheduleMeeting::create([
+                            'schedule_id' => $schedule->id,
+                            'day_of_week' => $m['day_of_week'],
+                            'start_time' => $m['start_time'],
+                            'end_time' => $m['end_time'],
+                            'room' => $m['room'],
+                        ]);
+                    }
+                }
+
                 $imported++;
             } catch (\Exception $e) {
                 $errors[] = "Row " . ($index + 2) . ": " . $e->getMessage();

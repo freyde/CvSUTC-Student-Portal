@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('student-portal')->name('student.')->group(function () {
         Route::get('/', [PortalController::class, 'index'])->name('portal.index');
         Route::get('/certificate', [PortalController::class, 'printCertificate'])->name('portal.certificate');
+        Route::get('/schedule', [PortalController::class, 'schedule'])->name('portal.schedule');
         Route::get('/profile', [StudentProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile/password', [StudentProfileController::class, 'updatePassword'])->name('profile.update-password');
     });

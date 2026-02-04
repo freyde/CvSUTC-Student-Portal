@@ -59,6 +59,11 @@ class Schedule extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function meetings(): HasMany
+    {
+        return $this->hasMany(ScheduleMeeting::class);
+    }
+
     public function finalizer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'finalized_by');
