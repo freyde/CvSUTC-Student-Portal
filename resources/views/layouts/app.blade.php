@@ -161,7 +161,7 @@
             </div>
         </div>
     </nav>
-    <main class="p-6 max-w-7xl mx-auto">
+    <main class="p-6 max-w-none mx-auto">
         @if(session('status'))
             <div class="mb-4 rounded border border-green-200 bg-green-50 px-3 py-2 text-green-800">{{ session('status') }}</div>
         @endif
