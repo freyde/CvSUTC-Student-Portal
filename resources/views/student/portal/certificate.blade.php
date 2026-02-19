@@ -368,7 +368,7 @@
                     <span class="label">Passing Percentage:</span>
                     <span class="value">
                         @if($groupedEnrollments->first()->count() > 0)
-                            &nbsp&nbsp{{ number_format(($totalPassed / $groupedEnrollments->first()->count()) * 100, 2) }}%&nbsp&nbsp
+                            &nbsp&nbsp{{ number_format(($totalPassed / $groupedEnrollments->first()->count()) * 100, 3) }}%&nbsp&nbsp
                         @else
                             ___
                         @endif
@@ -378,7 +378,7 @@
                     <span class="label">Average:</span>
                     <span class="value">
                         @if($gradeCount > 0)
-                            &nbsp&nbsp&nbsp{{ number_format($gradeSum / $gradeUnitSum, 2) }}&nbsp&nbsp&nbsp
+                            &nbsp&nbsp&nbsp{{ number_format($gradeSum / $gradeUnitSum, 3) }}&nbsp&nbsp&nbsp
                         @else
                             &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         @endif
