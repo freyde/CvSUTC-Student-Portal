@@ -365,7 +365,7 @@
                             $gradeValue = $finalGrade->score ?? null;
 
                             // Identify NSTP courses (adjust if your course codes differ)
-                            $isNSTP = in_array(strtoupper($course->code ?? ''), ['NSTP 1', 'NSTP 2', 'CvSU 101']);
+                            $isNoBearingGrade = in_array(strtoupper($course->code ?? ''), ['NSTP 1', 'NSTP 2', 'CVSU 101']);
 
                             // Determine if completed (not 5.00, INC, DRP)
                             $isCompleted = false;
@@ -384,7 +384,7 @@
 
                                 // Exclude NSTP 1, NSTP 2  and CvSU 101from weighted average calculation
                                 if (
-                                    !$isNSTP &&
+                                    !$isNoBearingGrade &&
                                     is_numeric($gradeValue) &&
                                     $gradeValue != 6.00 &&
                                     $gradeValue != 7.00
